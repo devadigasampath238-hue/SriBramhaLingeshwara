@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Bramhalingeshwar Temple</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+  <div class="slider">
+    <img src="images/img1.jpg" class="slide active">
+    <img src="images/img2.jpg" class="slide">
+  </div>
+
+  <div class="hero-text">
+    <h1>🛕 Sri Bramhalingeshwar Temple</h1>
+    <p>Online Seva Booking & Divine Services</p>
+  </div>
+</header>
+
+
+<nav class="navbar">
+  <a href="#about">About</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#sevas">Sevas</a>
+  <a href="#book">Book Seva</a>
+</nav>
+
+<section id="about">
+  <h2>About Temple</h2>
+  <p>
+    Sri Bramhalingeshwar Temple is a sacred place of worship.
+    Devotees can now book sevas online.
+  </p>
+</section>
+
+<section id="gallery" class="light">
+  <h2>Temple Gallery</h2>
+  <div class="gallery">
+    <img src="C:\Users\devad\Downloads\py\img1.jpeg" alt="Temple Image 1">
+    <img src="C:\Users\devad\Downloads\py\img2.jpeg" alt="Temple Image 2">
+  </div>
+</section>
+
+<section id="sevas">
+  <h2>Available Sevas</h2>
+  <ul>
+    <li>Mangalarathi – ₹50</li>
+    <li>Abhisheka – ₹150</li>
+    <li>Archana – ₹30</li>
+    <li>Mahapooja – ₹500</li>
+  </ul>
+</section>
+
+<section id="book" class="light">
+  <h2>Book Seva</h2>
+
+  <form onsubmit="return bookSeva()">
+
+    <label>Name</label>
+    <input type="text" id="name" required>
+
+    <label>Mobile Number</label>
+    <input type="tel" id="mobile" required>
+    <small id="mobileError">Invalid mobile number</small>
+
+    <label>Seva</label>
+    <select id="seva" onchange="updatePrice()" required>
+      <option value="">Select Seva</option>
+      <option value="Mangalarathi" data-price="50">Mangalarathi</option>
+      <option value="Abhisheka" data-price="150">Abhisheka</option>
+      <option value="Archana" data-price="30">Archana</option>
+      <option value="Mahapooja" data-price="500">Mahapooja</option>
+    </select>
+
+    <label>Price</label>
+    <input type="text" id="price" readonly>
+
+    <label>Date</label>
+<input type="date" id="date" required>
+
+
+    <label>Time</label>
+<select id="time" required>
+  <option value="">Select Time</option>
+  <option value="06:00">6:00 AM</option>
+  <option value="08:00">8:00 AM</option>
+  <option value="10:00">10:00 AM</option>
+  <option value="18:00">6:00 PM</option>
+</select>
+
+
+    <h3>UPI Payment</h3>
+    <img src="images/gpay-qr.png" class="qr">
+
+    <button type="submit">Book Seva</button>
+  </form>
+
+  <div id="successBox">
+    ✅ Booking sent successfully
+  </div>
+</section>
+
+<script>
+function updatePrice() {
+  const s = seva.options[seva.selectedIndex];
+  price.value = s.dataset.price ? "₹" + s.dataset.price : "";
+}
+
+function validMobile(m) {
+  return /^[6-9]\d{9}$/.test(m);
+}
+
+function bookSeva() {
+  if (!validMobile(mobile.value)) {
+    mobileError.style.display = "block";
+    return false;
+  }
+  mobileError.style.display = "none";
+
+  fetch("https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW8jy5QNEoKWHnpuKFpXAHGYbwfzk2L_wsAImA_S6bmNVJ4G2KJ6hKG/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      name: name.value,
+      mobile: mobile.value,
+      seva: seva.value,
+      price: price.value,
+      date: date.value,
+      time: time.value
+    })
+  });
+
+  window.open(
+    "https://api.whatsapp.com/send?phone=9380916728&text=" +
+    encodeURIComponent("New Seva Booking Submitted"),
+    "_blank"
+  );
+
+  successBox.style.display = "block";
+  return false;
+}
+</script>
+<a href="#book" class="float-book">Book Seva</a>
+<button onclick="toggleDark()" class="dark-btn">🌙</button>
+<h2 data-en="Book Seva" data-kn="ಸೇವೆ ಬುಕ್ ಮಾಡಿ">Book Seva</h2>
+<button onclick="setLang('en')">EN</button>
+<button onclick="setLang('kn')">KN</button>
+
+
+</body>
+</html>
+<script>
+/* Auto update price when seva changes */
+function updatePrice() {
+    const sevaSelect = document.getElementById("seva");
+    const priceInput = document.getElementById("price");
+
+    const selectedOption = sevaSelect.options[sevaSelect.selectedIndex];
+    const price = selectedOption.getAttribute("data-price");
+
+    priceInput.value = price ? "₹" + price : "";
+}
+
+/* Validate Indian mobile number */
+function isValidMobile(number) {
+    return /^[6-9]\d{9}$/.test(number);
+}
+
+/* Main booking function */
+function bookSeva() {
+
+    const name = document.getElementById("name").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const seva = document.getElementById("seva").value;
+    const price = document.getElementById("price").value;
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+
+    /* Mobile validation */
+    if (!isValidMobile(mobile)) {
+        document.getElementById("mobileError").style.display = "block";
+        return false;
+    } else {
+        document.getElementById("mobileError").style.display = "none";
+    }
+
+    /* Save data to Google Sheet */
+    fetch("https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW8jy5QNEoKWHnpuKFpXAHGYbwfzk2L_wsAImA_S6bmNVJ4G2KJ6hKG/exec", {
+        method: "POST",
+        body: JSON.stringify({
+            name: name,
+            mobile: mobile,
+            seva: seva,
+            price: price,
+            date: date,
+            time: time
+        })
+    });
+
+    /* WhatsApp message to temple officer */
+    const officerNumber = "9380916728"; // 🔴 REPLACE with real WhatsApp number
+
+    const message =
+        "🛕 Seva Booking Request 🛕\n\n" +
+        "Name: " + name + "\n" +
+        "Mobile: " + mobile + "\n" +
+        "Seva: " + seva + "\n" +
+        "Price: " + price + "\n" +
+        "Date: " + date + "\n" +
+        "Time: " + time;
+
+    const whatsappURL =
+        "https://api.whatsapp.com/send?phone=" +
+        officerNumber +
+        "&text=" +
+        encodeURIComponent(message);
+
+    window.open(whatsappURL, "_blank");
+
+    /* Show success message */
+    document.getElementById("successBox").style.display = "block";
+
+    return false; // prevent page reload
+}
+</script>
+<script>
+let slides = document.querySelectorAll(".slide");
+let index = 0;
+
+setInterval(() => {
+  slides[index].classList.remove("active");
+  index = (index + 1) % slides.length;
+  slides[index].classList.add("active");
+}, 4000);
+</script>
+<script>
+function setLang(lang) {
+  document.querySelectorAll("[data-en]").forEach(el => {
+    el.innerText = el.getAttribute("data-" + lang);
+  });
+}
+</script>
+<script>
+/* Disable past dates */
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+
+/* Set minimum date = today */
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, "0");
+const dd = String(today.getDate()).padStart(2, "0");
+dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+/* Handle time based on date */
+dateInput.addEventListener("change", handleTimeValidation);
+
+function handleTimeValidation() {
+  const selectedDate = new Date(dateInput.value);
+  const now = new Date();
+
+  // Reset all time options
+  Array.from(timeSelect.options).forEach(opt => {
+    opt.disabled = false;
+  });
+
+  // If selected date is today, disable past times
+  if (
+    selectedDate.toDateString() === now.toDateString()
+  ) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    Array.from(timeSelect.options).forEach(opt => {
+      if (!opt.value) return;
+
+      const [h, m] = opt.value.split(":").map(Number);
+      const optionMinutes = h * 60 + m;
+
+      if (optionMinutes <= currentMinutes) {
+        opt.disabled = true;
+      }
+    });
+  }
+
+  // Reset selected time
+  timeSelect.value = "";
+}
+</script>
+
+
+
+
