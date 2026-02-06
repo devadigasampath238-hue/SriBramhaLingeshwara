@@ -4,47 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sri Bramhalingeshwar Temple</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
+<!-- HEADER -->
 <header class="header">
   <div class="slider">
-    <img src="images/img1.jpg" class="slide active">
-    <img src="images/img2.jpg" class="slide">
+    <img src="./images/img1.jpg" class="slide active">
+    <img src="./images/img2.jpg" class="slide">
   </div>
 
   <div class="hero-text">
+    <img src="./images/logo.png" alt="Temple Logo" class="temple-logo">
     <h1>🛕 Sri Bramhalingeshwar Temple</h1>
     <p>Online Seva Booking & Divine Services</p>
   </div>
 </header>
 
-
+<!-- NAVBAR -->
 <nav class="navbar">
   <a href="#about">About</a>
   <a href="#gallery">Gallery</a>
   <a href="#sevas">Sevas</a>
   <a href="#book">Book Seva</a>
+  <a href="login.html">Login</a>
 </nav>
 
+<!-- ABOUT -->
 <section id="about">
-  <h2>About Temple</h2>
+  <h2>About the Temple</h2>
   <p>
     Sri Bramhalingeshwar Temple is a sacred place of worship.
     Devotees can now book sevas online.
   </p>
 </section>
 
+<!-- GALLERY -->
 <section id="gallery" class="light">
   <h2>Temple Gallery</h2>
   <div class="gallery">
-    <img src="C:\Users\devad\Downloads\py\img1.jpeg" alt="Temple Image 1">
-    <img src="C:\Users\devad\Downloads\py\img2.jpeg" alt="Temple Image 2">
+    <img src="./images/img1.jpg">
+    <img src="./images/img2.jpg">
   </div>
 </section>
 
+<!-- SEVAS -->
 <section id="sevas">
   <h2>Available Sevas</h2>
   <ul>
@@ -55,6 +61,7 @@
   </ul>
 </section>
 
+<!-- BOOK SEVA -->
 <section id="book" class="light">
   <h2>Book Seva</h2>
 
@@ -80,40 +87,55 @@
     <input type="text" id="price" readonly>
 
     <label>Date</label>
-<input type="date" id="date" required>
-
+    <input type="date" id="date" required>
 
     <label>Time</label>
-<select id="time" required>
-  <option value="">Select Time</option>
-  <option value="06:00">6:00 AM</option>
-  <option value="08:00">8:00 AM</option>
-  <option value="10:00">10:00 AM</option>
-  <option value="18:00">6:00 PM</option>
-</select>
+    <select id="time" required>
+      <option value="">Select Time</option>
+      <option value="06:00">6:00 AM</option>
+      <option value="08:00">8:00 AM</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="18:00">6:00 PM</option>
+    </select>
 
-
-    <h3>UPI Payment</h3>
-    <img src="images/gpay-qr.png" class="qr">
+    <h3>UPI / GPay Payment</h3>
+    <img src="./images/gpay-qr.png" class="qr">
 
     <button type="submit">Book Seva</button>
   </form>
 
-  <div id="successBox">
-    ✅ Booking sent successfully
-  </div>
+  <div id="successBox">✅ Booking sent successfully</div>
 </section>
 
+<a href="#book" class="float-book">Book Seva</a>
+
+<!-- JAVASCRIPT -->
 <script>
+/* Slider */
+let slides = document.querySelectorAll(".slide");
+let i = 0;
+setInterval(() => {
+  slides[i].classList.remove("active");
+  i = (i + 1) % slides.length;
+  slides[i].classList.add("active");
+}, 4000);
+
+/* Price update */
 function updatePrice() {
   const s = seva.options[seva.selectedIndex];
   price.value = s.dataset.price ? "₹" + s.dataset.price : "";
 }
 
+/* Mobile validation */
 function validMobile(m) {
   return /^[6-9]\d{9}$/.test(m);
 }
 
+/* Date restriction */
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("date").min = today;
+
+/* Booking */
 function bookSeva() {
   if (!validMobile(mobile.value)) {
     mobileError.style.display = "block";
@@ -134,7 +156,7 @@ function bookSeva() {
   });
 
   window.open(
-    "https://api.whatsapp.com/send?phone=9380916728&text=" +
+    "https://api.whatsapp.com/send?phone=91XXXXXXXXXX&text=" +
     encodeURIComponent("New Seva Booking Submitted"),
     "_blank"
   );
@@ -143,15 +165,56 @@ function bookSeva() {
   return false;
 }
 </script>
-<a href="#book" class="float-book">Book Seva</a>
-<button onclick="toggleDark()" class="dark-btn">🌙</button>
-<h2 data-en="Book Seva" data-kn="ಸೇವೆ ಬುಕ್ ಮಾಡಿ">Book Seva</h2>
-<button onclick="setLang('en')">EN</button>
-<button onclick="setLang('kn')">KN</button>
-
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temple Login</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<section class="light">
+  <h2>🔐 Admin Login</h2>
+
+  <form onsubmit="return loginUser()">
+    <label>Username</label>
+    <input type="text" id="username" required>
+
+    <label>Password</label>
+    <input type="password" id="password" required>
+
+    <button type="submit">Login</button>
+
+    <p id="loginError" style="color:red; display:none;">
+      Invalid username or password
+    </p>
+  </form>
+</section>
+
+<script>
+function loginUser() {
+  if (
+    document.getElementById("username").value === "admin" &&
+    document.getElementById("password").value === "1234"
+  ) {
+    window.location.href = "index.html";
+  } else {
+    document.getElementById("loginError").style.display = "block";
+  }
+  return false;
+}
+</script>
+
+</body>
+</html>
+
+
 <script>
 /* Auto update price when seva changes */
 function updatePrice() {
