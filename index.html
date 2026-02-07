@@ -187,7 +187,7 @@ function bookSeva() {
   });
 
   window.open(
-    "https://api.whatsapp.com/send?phone=919380916728&text=" +
+    "https://api.whatsapp.com/send?phone=91+ mobile &text=" +
     encodeURIComponent("New Seva Booking Submitted"),
     "_blank"
   );
@@ -247,13 +247,34 @@ function isValidMobile(number) {
 
 /* Main booking function */
 function bookSeva() {
+  const name = document.getElementById("name").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
 
-    const name = document.getElementById("name").value.trim();
-    const mobile = document.getElementById("mobile").value.trim();
-    const seva = document.getElementById("seva").value;
-    const price = document.getElementById("price").value;
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
+  // ❗ Check empty fields first
+  if (!name || !mobile || !seva || !date || !time) {
+    alert("Please fill all details");
+    return false;
+  }
+
+  // ❗ Mobile validation only AFTER user enters number
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    document.getElementById("mobileError").style.display = "block";
+    return false;
+  }
+  document.getElementById("mobileError").style.display = "none";
+
+  // Continue booking
+  sendWhatsApp(name, mobile, seva, price, date, time);
+  generatePDF(name, mobile, seva, price, date, time);
+
+  document.getElementById("successBox").style.display = "block";
+  return false;
+}
+
 
     /* Mobile validation */
     if (!isValidMobile(mobile)) {
@@ -277,24 +298,26 @@ function bookSeva() {
     });
 
     /* WhatsApp message to temple officer */
-    const officerNumber = "9380916728"; // 🔴 REPLACE with real WhatsApp number
+    function sendWhatsApp(name, mobile, seva, price, date, time) {
+  const message =
+    "🛕 Sri Bramhalingeshwar Temple 🛕\n\n" +
+    "Your Seva Booking is Confirmed ✅\n\n" +
+    "Name: " + name + "\n" +
+    "Seva: " + seva + "\n" +
+    "Price: " + price + "\n" +
+    "Date: " + date + "\n" +
+    "Time: " + time + "\n\n" +
+    "Please bring this message / PDF receipt.\n" +
+    "🙏 Thank you";
 
-    const message =
-        "🛕 Seva Booking Request 🛕\n\n" +
-        "Name: " + name + "\n" +
-        "Mobile: " + mobile + "\n" +
-        "Seva: " + seva + "\n" +
-        "Price: " + price + "\n" +
-        "Date: " + date + "\n" +
-        "Time: " + time;
+  const whatsappURL =
+    "https://api.whatsapp.com/send?phone=91" +
+    mobile +
+    "&text=" +
+    encodeURIComponent(message);
 
-    const whatsappURL =
-        "https://api.whatsapp.com/send?phone=" +
-        officerNumber +
-        "&text=" +
-        encodeURIComponent(message);
-
-    window.open(whatsappURL, "_blank");
+  window.open(whatsappURL, "_blank");
+}
 
     /* Show success message */
     // Generate PDF for user
@@ -348,49 +371,7 @@ function setLang(lang) {
 </script>
 <script>
 /* Disable past dates */
-const dateInput = document.getElementById("date");
-const timeSelect = document.getElementById("time");
 
-/* Set minimum date = today */
-const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth() + 1).padStart(2, "0");
-const dd = String(today.getDate()).padStart(2, "0");
-dateInput.min = `${yyyy}-${mm}-${dd}`;
-
-/* Handle time based on date */
-dateInput.addEventListener("change", handleTimeValidation);
-
-function handleTimeValidation() {
-  const selectedDate = new Date(dateInput.value);
-  const now = new Date();
-
-  // Reset all time options
-  Array.from(timeSelect.options).forEach(opt => {
-    opt.disabled = false;
-  });
-
-  // If selected date is today, disable past times
-  if (
-    selectedDate.toDateString() === now.toDateString()
-  ) {
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    Array.from(timeSelect.options).forEach(opt => {
-      if (!opt.value) return;
-
-      const [h, m] = opt.value.split(":").map(Number);
-      const optionMinutes = h * 60 + m;
-
-      if (optionMinutes <= currentMinutes) {
-        opt.disabled = true;
-      }
-    });
-  }
-
-  // Reset selected time
-  timeSelect.value = "";
-}
 
 <!-- HTML content above -->
 
@@ -398,6 +379,35 @@ function handleTimeValidation() {
   function payNow() {
     const sevaSelect = document.getElementById("seva");
     const priceInput = document.getElementById("price");
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+
+// Disable past dates
+dateInput.min = new Date().toISOString().split("T")[0];
+
+dateInput.addEventListener("change", () => {
+  const selectedDate = new Date(dateInput.value);
+  const now = new Date();
+
+  // Enable all times first
+  Array.from(timeSelect.options).forEach(opt => opt.disabled = false);
+
+  // If selected date is today → disable past times
+  if (selectedDate.toDateString() === now.toDateString()) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    Array.from(timeSelect.options).forEach(opt => {
+      if (!opt.value) return;
+      const [h, m] = opt.value.split(":").map(Number);
+      const optionMinutes = h * 60 + m;
+      if (optionMinutes <= currentMinutes) {
+        opt.disabled = true;
+      }
+    });
+  }
+
+  timeSelect.value = "";
+});
 
     if (!sevaSelect.value || !priceInput.value) {
       alert("Please select a seva first");
