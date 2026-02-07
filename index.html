@@ -12,12 +12,12 @@
 <!-- HEADER -->
 <header class="header">
   <div class="slider">
-    <img src="./images/img1.jpg" class="slide active">
-    <img src="./images/img2.jpg" class="slide">
+    <img src="img4.jpeg" class="slide active">
+    <img src="img5.jpeg" class="slide">
   </div>
 
   <div class="hero-text">
-    <img src="./images/logo.png" alt="Temple Logo" class="temple-logo">
+    <img src="img5.jpeg" alt="Temple Logo" class="temple-logo">
     <h1>🛕 Sri Bramhalingeshwar Temple</h1>
     <p>Online Seva Booking & Divine Services</p>
   </div>
@@ -99,9 +99,11 @@
     </select>
 
     <h3>UPI / GPay Payment</h3>
-    <img src="./images/gpay-qr.png" class="qr">
-
+    <img src="pay.jpeg" class="qr">
     <button type="submit">Book Seva</button>
+<button type="button" onclick="payNow()">Pay via GPay</button>
+
+    
   </form>
 
   <div id="successBox">✅ Booking sent successfully</div>
@@ -165,54 +167,36 @@ function bookSeva() {
   return false;
 }
 </script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Temple Login</title>
-<link rel="stylesheet" href="./style.css">
-</head>
-
-<body>
-
-<section class="light">
-  <h2>🔐 Admin Login</h2>
-
-  <form onsubmit="return loginUser()">
-    <label>Username</label>
-    <input type="text" id="username" required>
-
-    <label>Password</label>
-    <input type="password" id="password" required>
-
-    <button type="submit">Login</button>
-
-    <p id="loginError" style="color:red; display:none;">
-      Invalid username or password
-    </p>
-  </form>
-</section>
-
 <script>
-function loginUser() {
-  if (
-    document.getElementById("username").value === "sampath" &&
-    document.getElementById("password").value === "1234"
-  ) {
-    window.location.href = "index.html";
-  } else {
-    document.getElementById("loginError").style.display = "block";
+function payNow() {
+  alert("Pay button clicked"); // 🔍 debug line
+
+  const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
+
+  if (!seva || !price) {
+    alert("Please select seva first");
+    return;
   }
-  return false;
+
+  const amount = price.replace("₹", "");
+
+  const upiUrl =
+    "upi://pay?" +
+    "pa=7204132286@fam&" +   // 🔴 CHANGE UPI ID
+    "pn=Sri Bramhalingeshwar Temple&" +
+    "am=" + amount + "&" +
+    "cu=INR";
+
+  window.location.href = upiUrl;
 }
 </script>
 
+
 </body>
 </html>
+
+
 
 
 <script>
@@ -351,8 +335,38 @@ function handleTimeValidation() {
   // Reset selected time
   timeSelect.value = "";
 }
+
+<!-- HTML content above -->
+
+<script>
+  function payNow() {
+    const sevaSelect = document.getElementById("seva");
+    const priceInput = document.getElementById("price");
+
+    if (!sevaSelect.value || !priceInput.value) {
+      alert("Please select a seva first");
+      return;
+    }
+
+    const amount = priceInput.value.replace("₹", "");
+    const sevaName = sevaSelect.value;
+
+    const upiUrl =
+      "upi://pay?" +
+      "pa=templetrust@okaxis&" +
+      "pn=Sri%20Bramhalingeshwar%20Temple&" +
+      "am=" + amount + "&" +
+      "cu=INR&" +
+      "tn=" + encodeURIComponent("Seva Booking - " + sevaName);
+
+    window.location.href = upiUrl;
+  }
 </script>
 
+</body>
+</html>
+
+</script>
 
 
 

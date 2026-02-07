@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Sri Bramhalingeshwar Temple</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+  <section class="light">
+    <h2>🔐 Admin Login</h2>
+
+    <form onsubmit="return loginUser()">
+
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter username" required>
+
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+
+      <button type="submit">Login</button>
+
+      <p id="loginError" style="color:red; display:none; text-align:center; margin-top:10px;">
+        ❌ Invalid username or password
+      </p>
+
+    </form>
+  </section>
+
+  <script>
+    function loginUser() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+
+      // ✅ DEMO ADMIN CREDENTIALS (MICRO PROJECT)
+      if (user === "admin" && pass === "1234") {
+
+        // 🔥 OPEN GOOGLE SHEET (ADMIN PANEL)
+        window.open(
+          "https://docs.google.com/spreadsheets/d/1ANa4Qzbotrr2aqo70o8FQJG5Jc5xgtqwzPd3U8JvAVY/edit?usp=sharing",
+          "_blank"
+        );
+
+      } else {
+        document.getElementById("loginError").style.display = "block";
+      }
+
+      return false; // stop page reload
+    }
+  </script>
+
+</body>
+</html>
