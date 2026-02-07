@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sri Bramhalingeshwar Temple</title>
@@ -110,6 +112,33 @@
 </section>
 
 <a href="#book" class="float-book">Book Seva</a>
+<script>
+<script>
+function bookSeva() {
+
+  const name = document.getElementById("name").value;
+  const mobile = document.getElementById("mobile").value;
+  const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+
+  // Generate PDF with correct data
+  generatePDF({
+    name,
+    mobile,
+    seva,
+    price,
+    date,
+    time
+  });
+
+  alert("Booking successful! PDF downloaded.");
+  return false;
+}
+</script>
+
+</script>
 
 <!-- JAVASCRIPT -->
 <script>
@@ -268,9 +297,36 @@ function bookSeva() {
     window.open(whatsappURL, "_blank");
 
     /* Show success message */
-    document.getElementById("successBox").style.display = "block";
+    // Generate PDF for user
+function generatePDF(details) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-    return false; // prevent page reload
+  doc.setFontSize(18);
+  doc.text("Sri Bramhalingeshwar Temple", 20, 20);
+
+  doc.setFontSize(12);
+  doc.text("Seva Booking Receipt", 20, 30);
+  doc.line(20, 32, 190, 32);
+
+  let y = 45;
+  doc.text("Name: " + details.name, 20, y); y += 10;
+  doc.text("Mobile: " + details.mobile, 20, y); y += 10;
+  doc.text("Seva: " + details.seva, 20, y); y += 10;
+  doc.text("Price: Rs. " + details.price, 20, y); y += 10;
+  doc.text("Date: " + details.date, 20, y); y += 10;
+  doc.text("Time: " + details.time, 20, y); y += 15;
+
+  doc.text("Please show this receipt at the temple.", 20, y);
+
+  doc.save("Seva_Booking_Receipt.pdf");
+}
+
+});
+
+successBox.style.display = "block";
+return false;
+
 }
 </script>
 <script>
@@ -367,6 +423,3 @@ function handleTimeValidation() {
 </html>
 
 </script>
-
-
-
