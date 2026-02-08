@@ -2,54 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Temple Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Sri Bramhalingeshwar Temple</title>
-  <link rel="stylesheet" href="./style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      color: #7a0000;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+    button {
+      background: #7a0000;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .link {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: blue;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
-  <section class="light">
-    <h2>🔐 Admin Login</h2>
+<div class="card" id="loginBox">
+  <h2>Admin Login</h2>
 
-    <form onsubmit="return loginUser()">
+  <label>Username</label>
+  <input type="text" id="loginUser">
 
-      <label>Username</label>
-      <input type="text" id="username" placeholder="Enter username" required>
+  <label>Password</label>
+  <input type="password" id="loginPass">
 
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Enter password" required>
+  <button onclick="login()">Login</button>
 
-      <button type="submit">Login</button>
+  <div class="error" id="loginError">Invalid login</div>
 
-      <p id="loginError" style="color:red; display:none; text-align:center; margin-top:10px;">
-        ❌ Invalid username or password
-      </p>
+  <div class="link" onclick="showRegister()">Create Admin Account</div>
+</div>
 
-    </form>
-  </section>
+<div class="card" id="registerBox" style="display:none;">
+  <h2>Create Admin Account</h2>
 
-  <script>
-    function loginUser() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
+  <label>Temple Code</label>
+  <input type="text" id="templeCode">
 
-      // ✅ DEMO ADMIN CREDENTIALS (MICRO PROJECT)
-      if (user === "admin" && pass === "1234") {
+  <label>Username</label>
+  <input type="text" id="regUser">
 
-        // 🔥 OPEN GOOGLE SHEET (ADMIN PANEL)
-        window.open(
-          "https://docs.google.com/spreadsheets/d/1ANa4Qzbotrr2aqo70o8FQJG5Jc5xgtqwzPd3U8JvAVY/edit?usp=sharing",
-          "_blank"
-        );
+  <label>Password</label>
+  <input type="password" id="regPass">
 
-      } else {
-        document.getElementById("loginError").style.display = "block";
-      }
+  <button onclick="register()">Create Account</button>
 
-      return false; // stop page reload
-    }
-  </script>
+  <div class="error" id="regError">Invalid Temple Code</div>
 
+  <div class="link" onclick="showLogin()">Back to Login</div>
+</div>
+
+<script src="admin.js"></script>
 </body>
 </html>
+<script>
+// 🔐 CHANGE THIS TEMPLE CODE (SECRET)
+const TEMPLE_CODE = "BRAMHA2026";
+
+// Switch UI
+function showRegister() {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("registerBox").style.display = "block";
+}
+
+function showLogin() {
+  document.getElementById("registerBox").style.display = "none";
+  document.getElementById("loginBox").style.display = "block";
+}
+
+// Register admin
+function register() {
+  const code = document.getElementById("templeCode").value;
+  const user = document.getElementById("regUser").value;
+  const pass = document.getElementById("regPass").value;
+
+  if (code !== TEMPLE_CODE) {
+    document.getElementById("regError").style.display = "block";
+    return;
+  }
+
+  localStorage.setItem("adminUser", user);
+  localStorage.setItem("adminPass", pass);
+
+  alert("Admin account created successfully!");
+  showLogin();
+}
+
+// Login admin
+function login() {
+  const user = document.getElementById("loginUser").value;
+  const pass = document.getElementById("loginPass").value;
+
+  const savedUser = localStorage.getItem("adminUser");
+  const savedPass = localStorage.getItem("adminPass");
+
+  if (user === savedUser && pass === savedPass) {
+    // 🔥 Redirect to admin panel (Google Sheet)
+    window.location.href =
+      "https://docs.google.com/spreadsheets/d/1ANa4Qzbotrr2aqo70o8FQJG5Jc5xgtqwzPd3U8JvAVY/edit";
+  } else {
+    document.getElementById("loginError").style.display = "block";
+  }
+}
+</script>
