@@ -149,3 +149,12 @@ button {
   font-weight: bold;
   color: green;
 }
+#pdfMessage {
+  background: #e8f4ff;
+  color: #004085;
+  padding: 10px;
+  border-left: 4px solid #007bff;
+  font-size: 14px;
+  margin-top: 15px;
+  border-radius: 5px;
+}

@@ -501,6 +501,9 @@ dateInput.addEventListener("change", () => {
 
 <div class="card">
   <h1>🛕 Seva Booking</h1>
+<p id="pdfMessage">
+  📄 To download the booking details PDF, please enter all the above details.
+</p>
 
   <form onsubmit="return bookSeva()">
 
@@ -586,13 +589,31 @@ function bookSeva() {
   const name = document.getElementById("name").value.trim();
   const mobile = document.getElementById("mobile").value.trim();
   const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
 
+  // ✅ PDF-specific validation ONLY
   if (!name || !mobile || !seva || !date || !time) {
     alert("📄 To download the booking details PDF, please enter all the above details.");
     return false;
   }
+
+  // mobile validation
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    document.getElementById("mobileError").style.display = "block";
+    return false;
+  }
+  document.getElementById("mobileError").style.display = "none";
+
+  // PDF generation + WhatsApp
+  generatePDF(name, mobile, seva, price, date, time);
+  sendWhatsApp(name, mobile, seva, price, date, time);
+
+  document.getElementById("successBox").style.display = "block";
+  return false;
+}
+
 
   // continue normal booking
 }
