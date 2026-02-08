@@ -586,9 +586,17 @@ function bookSeva() {
   const name = document.getElementById("name").value.trim();
   const mobile = document.getElementById("mobile").value.trim();
   const seva = document.getElementById("seva").value;
-  const price = document.getElementById("price").value;
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
+
+  if (!name || !mobile || !seva || !date || !time) {
+    alert("📄 To download the booking details PDF, please enter all the above details.");
+    return false;
+  }
+
+  // continue normal booking
+}
+
 
   if (!name || !mobile || !seva || !date || !time) {
     alert("Please fill all details");
