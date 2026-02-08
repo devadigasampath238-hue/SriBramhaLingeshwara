@@ -431,7 +431,371 @@ dateInput.addEventListener("change", () => {
   }
 </script>
 
+
 </body>
 </html>
 
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sri Bramhalingeshwar Temple</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- jsPDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      color: #7a0000;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 12px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+    button {
+      background: #7a0000;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    #mobileError {
+      color: red;
+      display: none;
+      font-size: 14px;
+    }
+    #successBox {
+      display: none;
+      background: #d4edda;
+      color: #155724;
+      padding: 10px;
+      margin-top: 15px;
+      text-align: center;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>🛕 Seva Booking</h1>
+
+  <form onsubmit="return bookSeva()">
+
+    <label>Name</label>
+    <input type="text" id="name">
+
+    <label>Mobile Number</label>
+    <input type="tel" id="mobile">
+    <div id="mobileError">Enter valid 10-digit mobile number</div>
+
+    <label>Seva</label>
+    <select id="seva" onchange="updatePrice()">
+      <option value="">Select Seva</option>
+      <option value="Mangalarathi" data-price="50">Mangalarathi – ₹50</option>
+      <option value="Abhisheka" data-price="150">Abhisheka – ₹150</option>
+      <option value="Archana" data-price="30">Archana – ₹30</option>
+      <option value="Mahapooja" data-price="500">Mahapooja – ₹500</option>
+    </select>
+
+    <label>Price</label>
+    <input type="text" id="price" readonly>
+
+    <label>Date</label>
+    <input type="date" id="date">
+
+    <label>Time</label>
+    <select id="time">
+      <option value="">Select Time</option>
+      <option value="06:00">6:00 AM</option>
+      <option value="08:00">8:00 AM</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="18:00">6:00 PM</option>
+      <option value="19:00">7:00 PM</option>
+    </select>
+
+    <button type="submit">Book Seva</button>
+  </form>
+
+  <div id="successBox">✅ Booking successful. PDF downloaded.</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+<script>
+/* ===== PRICE UPDATE ===== */
+function updatePrice() {
+  const seva = document.getElementById("seva");
+  const price = document.getElementById("price");
+  const opt = seva.options[seva.selectedIndex];
+  price.value = opt.dataset.price ? "₹" + opt.dataset.price : "";
+}
+
+/* ===== DATE & TIME VALIDATION ===== */
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+
+dateInput.min = new Date().toISOString().split("T")[0];
+
+dateInput.addEventListener("change", () => {
+  const now = new Date();
+  const selectedDate = new Date(dateInput.value);
+
+  Array.from(timeSelect.options).forEach(opt => opt.disabled = false);
+
+  if (selectedDate.toDateString() === now.toDateString()) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    Array.from(timeSelect.options).forEach(opt => {
+      if (!opt.value) return;
+      const [h, m] = opt.value.split(":").map(Number);
+      const optionMinutes = h * 60 + m;
+      if (optionMinutes <= currentMinutes) {
+        opt.disabled = true;
+      }
+    });
+  }
+  timeSelect.value = "";
+});
+
+/* ===== BOOK SEVA ===== */
+function bookSeva() {
+  const name = document.getElementById("name").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+
+  if (!name || !mobile || !seva || !date || !time) {
+    alert("Please fill all details");
+    return false;
+  }
+
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    document.getElementById("mobileError").style.display = "block";
+    return false;
+  }
+  document.getElementById("mobileError").style.display = "none";
+
+  // Generate PDF
+  generatePDF(name, mobile, seva, price, date, time);
+
+  // Send WhatsApp to USER number
+  sendWhatsApp(name, mobile, seva, price, date, time);
+
+  document.getElementById("successBox").style.display = "block";
+  return false;
+}
+
+/* ===== PDF GENERATION ===== */
+function generatePDF(name, mobile, seva, price, date, time) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Sri Bramhalingeshwar Temple", 20, 20);
+
+  doc.setFontSize(12);
+  doc.text("Seva Booking Receipt", 20, 30);
+  doc.line(20, 32, 190, 32);
+
+  let y = 45;
+  doc.text("Name: " + name, 20, y); y += 10;
+  doc.text("Mobile: " + mobile, 20, y); y += 10;
+  doc.text("Seva: " + seva, 20, y); y += 10;
+  doc.text("Price: " + price, 20, y); y += 10;
+  doc.text("Date: " + date, 20, y); y += 10;
+  doc.text("Time: " + time, 20, y);
+
+  doc.save("Seva_Booking_Receipt.pdf");
+}
+
+/* ===== WHATSAPP TO USER ===== */
+function sendWhatsApp(name, mobile, seva, price, date, time) {
+  const msg =
+    "🛕 Sri Bramhalingeshwar Temple 🛕\n\n" +
+    "Your Seva Booking is Confirmed ✅\n\n" +
+    "Name: " + name + "\n" +
+    "Seva: " + seva + "\n" +
+    "Price: " + price + "\n" +
+    "Date: " + date + "\n" +
+    "Time: " + time + "\n\n" +
+    "🙏 Thank you";
+
+  const url =
+    "https://api.whatsapp.com/send?phone=91" +
+    mobile +
+    "&text=" +
+    encodeURIComponent(msg);
+
+  window.open(url, "_blank");
+}
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Temple Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      color: #7a0000;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+    button {
+      background: #7a0000;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .link {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: blue;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card" id="loginBox">
+  <h2>Admin Login</h2>
+
+  <label>Username</label>
+  <input type="text" id="loginUser">
+
+  <label>Password</label>
+  <input type="password" id="loginPass">
+
+  <button onclick="login()">Login</button>
+
+  <div class="error" id="loginError">Invalid login</div>
+
+  <div class="link" onclick="showRegister()">Create Admin Account</div>
+</div>
+
+<div class="card" id="registerBox" style="display:none;">
+  <h2>Create Admin Account</h2>
+
+  <label>Temple Code</label>
+  <input type="text" id="templeCode">
+
+  <label>Username</label>
+  <input type="text" id="regUser">
+
+  <label>Password</label>
+  <input type="password" id="regPass">
+
+  <button onclick="register()">Create Account</button>
+
+  <div class="error" id="regError">Invalid Temple Code</div>
+
+  <div class="link" onclick="showLogin()">Back to Login</div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
+<script>
+// 🔐 CHANGE THIS TEMPLE CODE (SECRET)
+const TEMPLE_CODE = "BRAMHA2026";
+
+// Switch UI
+function showRegister() {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("registerBox").style.display = "block";
+}
+
+function showLogin() {
+  document.getElementById("registerBox").style.display = "none";
+  document.getElementById("loginBox").style.display = "block";
+}
+
+// Register admin
+function register() {
+  const code = document.getElementById("templeCode").value;
+  const user = document.getElementById("regUser").value;
+  const pass = document.getElementById("regPass").value;
+
+  if (code !== TEMPLE_CODE) {
+    document.getElementById("regError").style.display = "block";
+    return;
+  }
+
+  localStorage.setItem("adminUser", user);
+  localStorage.setItem("adminPass", pass);
+
+  alert("Admin account created successfully!");
+  showLogin();
+}
+
+// Login admin
+function login() {
+  const user = document.getElementById("loginUser").value;
+  const pass = document.getElementById("loginPass").value;
+
+  const savedUser = localStorage.getItem("adminUser");
+  const savedPass = localStorage.getItem("adminPass");
+
+  if (user === savedUser && pass === savedPass) {
+    // 🔥 Redirect to admin panel (Google Sheet)
+    window.location.href =
+      "https://docs.google.com/spreadsheets/d/1ANa4Qzbotrr2aqo70o8FQJG5Jc5xgtqwzPd3U8JvAVY/edit";
+  } else {
+    document.getElementById("loginError").style.display = "block";
+  }
+}
 </script>
