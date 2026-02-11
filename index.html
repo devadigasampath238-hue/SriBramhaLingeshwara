@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sri Bramhalingeshwar Temple - Online Seva Booking</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- HEADER WITH SLIDER -->
+<header class="header">
+  <div class="slider">
+    <img src="img4.jpeg" class="slide active" alt="Temple View 1">
+    <img src="img5.jpeg" class="slide" alt="Temple View 2">
+  </div>
+
+  <div class="hero-text">
+    <img src="img5.jpeg" alt="Temple Logo" class="temple-logo">
+    <h1>🛕 Sri Bramhalingeshwar Temple</h1>
+    <p>Online Seva Booking & Divine Services</p>
+  </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav class="navbar">
+  <a href="#about">About</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#sevas">Sevas</a>
+  <a href="#book">Book Seva</a>
+  <a href="admin.html">Admin</a>
+</nav>
+
+<!-- ABOUT SECTION -->
+<section id="about">
+  <h2>About the Temple</h2>
+  <p>
+    Sri Bramhalingeshwar Temple is a sacred place of worship dedicated to Lord Shiva.
+    Devotees can now conveniently book sevas online and receive instant confirmation.
+  </p>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="light">
+  <h2>Temple Gallery</h2>
+  <div class="gallery">
+    <img src="img1.jpeg" alt="Temple Interior">
+    <img src="img2.jpeg" alt="Temple Deity">
+  </div>
+</section>
+
+<!-- AVAILABLE SEVAS -->
+<section id="sevas">
+  <h2>Available Sevas</h2>
+  <ul>
+    <li>Mangalarathi – ₹50</li>
+    <li>Abhisheka – ₹150</li>
+    <li>Archana – ₹30</li>
+    <li>Mahapooja – ₹500</li>
+  </ul>
+</section>
+
+<!-- BOOKING FORM -->
+<section id="book" class="light">
+  <h2>Book Your Seva</h2>
+
+  <form id="sevaForm" onsubmit="return bookSeva()">
+
+    <label for="name">Name *</label>
+    <input type="text" id="name" placeholder="Enter your full name" required>
+
+    <label for="mobile">Mobile Number *</label>
+    <input type="tel" id="mobile" placeholder="10-digit mobile number" required>
+    <small id="mobileError" class="error-msg">Please enter a valid 10-digit mobile number starting with 6-9</small>
+
+    <label for="seva">Select Seva *</label>
+    <select id="seva" onchange="updatePrice()" required>
+      <option value="">-- Choose Seva --</option>
+      <option value="Mangalarathi" data-price="50">Mangalarathi - ₹50</option>
+      <option value="Abhisheka" data-price="150">Abhisheka - ₹150</option>
+      <option value="Archana" data-price="30">Archana - ₹30</option>
+      <option value="Mahapooja" data-price="500">Mahapooja - ₹500</option>
+    </select>
+
+    <label for="price">Price</label>
+    <input type="text" id="price" readonly placeholder="Select seva to see price">
+
+    <label for="date">Date *</label>
+    <input type="date" id="date" required>
+
+    <label for="time">Time Slot *</label>
+    <select id="time" required>
+      <option value="">-- Select Time --</option>
+      <option value="06:00">6:00 AM</option>
+      <option value="08:00">8:00 AM</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="18:00">6:00 PM</option>
+      <option value="19:00">7:00 PM</option>
+    </select>
+
+    <div class="payment-section">
+      <h3>Payment via UPI / GPay</h3>
+      <p class="payment-note">Scan QR code or click "Pay Now" button</p>
+      <img src="pay.jpeg" class="qr-code" alt="UPI Payment QR Code">
+      <div class="button-group">
+        <button type="button" class="btn-pay" onclick="payNow()">💳 Pay Now via UPI</button>
+        <button type="submit" class="btn-submit">📋 Book Seva & Download Receipt</button>
+      </div>
+    </div>
+  </form>
+
+  <div id="successBox" class="success-msg">
+    ✅ Booking Confirmed! Your receipt has been downloaded and WhatsApp message sent.
+  </div>
+</section>
+
+<!-- FLOATING BOOK BUTTON -->
+<a href="#book" class="float-book">📿 Book Seva</a>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Sri Bramhalingeshwar Temple. All rights reserved.</p>
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+/* ===== IMAGE SLIDER ===== */
+let slides = document.querySelectorAll(".slide");
+let currentSlide = 0;
+
+setInterval(() => {
+  slides[currentSlide].classList.remove("active");
+  currentSlide = (currentSlide + 1) % slides.length;
+  slides[currentSlide].classList.add("active");
+}, 4000);
+
+/* ===== UPDATE PRICE ON SEVA SELECTION ===== */
+function updatePrice() {
+  const sevaSelect = document.getElementById("seva");
+  const priceInput = document.getElementById("price");
+  const selectedOption = sevaSelect.options[sevaSelect.selectedIndex];
+  const price = selectedOption.getAttribute("data-price");
+  
+  priceInput.value = price ? "₹" + price : "";
+}
+
+/* ===== DATE & TIME RESTRICTIONS ===== */
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+
+// Set minimum date to today
+dateInput.min = new Date().toISOString().split("T")[0];
+
+// Disable past times if today is selected
+dateInput.addEventListener("change", () => {
+  const selectedDate = new Date(dateInput.value);
+  const now = new Date();
+
+  // Reset all time options
+  Array.from(timeSelect.options).forEach(opt => opt.disabled = false);
+
+  // If selected date is today, disable past times
+  if (selectedDate.toDateString() === now.toDateString()) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    Array.from(timeSelect.options).forEach(opt => {
+      if (!opt.value) return;
+      const [h, m] = opt.value.split(":").map(Number);
+      const optionMinutes = h * 60 + m;
+      
+      if (optionMinutes <= currentMinutes) {
+        opt.disabled = true;
+      }
+    });
+  }
+  
+  timeSelect.value = "";
+});
+
+/* ===== MOBILE NUMBER VALIDATION ===== */
+function isValidMobile(number) {
+  return /^[6-9]\d{9}$/.test(number);
+}
+
+/* ===== MAIN BOOKING FUNCTION ===== */
+function bookSeva() {
+  const name = document.getElementById("name").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const mobileError = document.getElementById("mobileError");
+  const successBox = document.getElementById("successBox");
+
+  // Validate mobile number
+  if (!isValidMobile(mobile)) {
+    mobileError.style.display = "block";
+    return false;
+  }
+  mobileError.style.display = "none";
+
+  // Generate PDF receipt
+  generatePDF(name, mobile, seva, price, date, time);
+
+  // Send WhatsApp confirmation
+  sendWhatsApp(name, mobile, seva, price, date, time);
+
+  // Save to Google Sheets (optional)
+  saveToGoogleSheet(name, mobile, seva, price, date, time);
+
+  // Show success message
+  successBox.style.display = "block";
+  
+  // Reset form
+  document.getElementById("sevaForm").reset();
+  
+  // Hide success message after 5 seconds
+  setTimeout(() => {
+    successBox.style.display = "none";
+  }, 5000);
+
+  return false;
+}
+
+/* ===== GENERATE PDF RECEIPT ===== */
+function generatePDF(name, mobile, seva, price, date, time) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Header
+  doc.setFontSize(20);
+  doc.setFont(undefined, 'bold');
+  doc.text("Sri Bramhalingeshwar Temple", 105, 20, { align: "center" });
+  
+  doc.setFontSize(14);
+  doc.setFont(undefined, 'normal');
+  doc.text("Seva Booking Receipt", 105, 30, { align: "center" });
+  
+  // Horizontal line
+  doc.setLineWidth(0.5);
+  doc.line(20, 35, 190, 35);
+
+  // Booking details
+  doc.setFontSize(12);
+  let y = 50;
+  
+  doc.text("Booking Details:", 20, y);
+  y += 15;
+  
+  doc.text("Name:", 20, y);
+  doc.text(name, 70, y);
+  y += 10;
+  
+  doc.text("Mobile:", 20, y);
+  doc.text(mobile, 70, y);
+  y += 10;
+  
+  doc.text("Seva:", 20, y);
+  doc.text(seva, 70, y);
+  y += 10;
+  
+  doc.text("Price:", 20, y);
+  doc.text(price, 70, y);
+  y += 10;
+  
+  doc.text("Date:", 20, y);
+  doc.text(date, 70, y);
+  y += 10;
+  
+  doc.text("Time:", 20, y);
+  doc.text(time, 70, y);
+  y += 20;
+
+  // Footer
+  doc.setFontSize(10);
+  doc.text("Please show this receipt at the temple.", 105, y, { align: "center" });
+  doc.text("Thank you for your devotion! 🙏", 105, y + 7, { align: "center" });
+
+  // Save PDF
+  doc.save("Seva_Booking_Receipt.pdf");
+}
+
+/* ===== SEND WHATSAPP MESSAGE ===== */
+function sendWhatsApp(name, mobile, seva, price, date, time) {
+  const message = 
+    "🛕 Sri Bramhalingeshwar Temple 🛕\n\n" +
+    "✅ Your Seva Booking is Confirmed\n\n" +
+    "Name: " + name + "\n" +
+    "Seva: " + seva + "\n" +
+    "Price: " + price + "\n" +
+    "Date: " + date + "\n" +
+    "Time: " + time + "\n\n" +
+    "Please bring this message or PDF receipt to the temple.\n\n" +
+    "🙏 Thank you for your devotion!";
+
+  const whatsappURL = 
+    "https://api.whatsapp.com/send?phone=91" + 
+    mobile + 
+    "&text=" + 
+    encodeURIComponent(message);
+
+  window.open(whatsappURL, "_blank");
+}
+
+/* ===== SAVE TO GOOGLE SHEET (OPTIONAL) ===== */
+function saveToGoogleSheet(name, mobile, seva, price, date, time) {
+  const sheetURL = "https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW8jy5QNEoKWHnpuKFpXAHGYbwfzk2L_wsAImA_S6bmNVJ4G2KJ6hKG/exec";
+  
+  fetch(sheetURL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      mobile: mobile,
+      seva: seva,
+      price: price,
+      date: date,
+      time: time,
+      timestamp: new Date().toLocaleString()
+    })
+  });
+}
+
+/* ===== UPI PAYMENT ===== */
+function payNow() {
+  const sevaSelect = document.getElementById("seva");
+  const priceInput = document.getElementById("price");
+
+  if (!sevaSelect.value || !priceInput.value) {
+    alert("⚠️ Please select a seva first to see the price");
+    return;
+  }
+
+  const amount = priceInput.value.replace("₹", "").trim();
+  const sevaName = sevaSelect.value;
+
+  // UPI payment link (CHANGE UPI ID TO YOUR TEMPLE'S UPI)
+  const upiURL = 
+    "upi://pay?" +
+    "pa=7204132286@fam&" +  // ⚠️ CHANGE THIS TO YOUR TEMPLE UPI ID
+    "pn=Sri Bramhalingeshwar Temple&" +
+    "am=" + amount + "&" +
+    "cu=INR&" +
+    "tn=" + encodeURIComponent("Seva: " + sevaName);
+
+  window.location.href = upiURL;
+}
+</script>
+
+</body>
+</html>
