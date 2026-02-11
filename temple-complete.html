@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sri Bramhalingeshwar Temple - Complete Website</title>
+  
+  <!-- jsPDF Library for PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <style>
+    /* ===== EMBEDDED CSS - ALL STYLES IN ONE FILE ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #fff7e6, #fdebd0);
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER WITH SLIDER ===== */
+    .header {
+      position: relative;
+      height: 80vh;
+      overflow: hidden;
+      background: black;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.5s;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      color: white;
+      padding-top: 25vh;
+    }
+
+    .temple-logo {
+      width: 110px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.7));
+    }
+
+    .hero-text h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-text p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    /* ===== NAVIGATION BAR ===== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: rgba(123, 31, 162, 0.95);
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 16px;
+      display: inline-block;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .navbar a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 3px solid #ffd700;
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 60px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    section.light {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      margin-bottom: 30px;
+    }
+
+    section h2 {
+      text-align: center;
+      color: #7b1fa2;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    section h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6f00, #ffd700);
+      border-radius: 2px;
+    }
+
+    section p {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #555;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ===== GALLERY ===== */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    /* ===== SEVA LIST ===== */
+    ul {
+      list-style: none;
+      max-width: 400px;
+      margin: auto;
+      padding: 0;
+    }
+
+    ul li {
+      background: white;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    ul li:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(123, 31, 162, 0.2);
+    }
+
+    /* ===== BOOKING FORM ===== */
+    form {
+      max-width: 480px;
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 30px;
+      border-radius: 22px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      background: #fafafa;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #7b1fa2;
+      background: white;
+    }
+
+    input[readonly] {
+      background: #f0f0f0;
+      cursor: not-allowed;
+    }
+
+    .error-msg {
+      color: #d32f2f;
+      font-size: 0.85rem;
+      display: none;
+      margin-top: 5px;
+    }
+
+    /* PDF Message */
+    #pdfMessage {
+      background: #e8f4ff;
+      color: #004085;
+      padding: 10px;
+      border-left: 4px solid #007bff;
+      font-size: 14px;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+
+    /* ===== PAYMENT SECTION ===== */
+    .payment-section {
+      margin-top: 30px;
+      padding: 25px;
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3d6 100%);
+      border-radius: 12px;
+      border: 2px dashed #ffd700;
+    }
+
+    .payment-section h3 {
+      color: #7b1fa2;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .payment-note {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .qr, .qr-code {
+      width: 180px;
+      display: block;
+      margin: 15px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ===== BUTTONS ===== */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      background: linear-gradient(135deg, #7b1fa2, #ff6f00);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(123, 31, 162, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(123, 31, 162, 0.4);
+    }
+
+    .btn-pay {
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-pay:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #7b1fa2, #ff6f00);
+      box-shadow: 0 4px 10px rgba(123, 31, 162, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(123, 31, 162, 0.4);
+    }
+
+    /* ===== SUCCESS MESSAGE ===== */
+    .success-msg, #successBox {
+      display: none;
+      text-align: center;
+      font-weight: bold;
+      color: green;
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      padding: 18px;
+      border-radius: 10px;
+      margin-top: 25px;
+      border: 2px solid #c3e6cb;
+      box-shadow: 0 3px 10px rgba(21, 87, 36, 0.2);
+    }
+
+    /* ===== FLOATING BOOK BUTTON ===== */
+    .float-book {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ff6f00;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 6px 20px rgba(255, 111, 0, 0.4);
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    .float-book:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 111, 0, 0.5);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 50px;
+    }
+
+    footer p {
+      color: #ccc;
+    }
+
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 768px) {
+      .hero-text {
+        padding-top: 20vh;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      
+      .hero-text h1 {
+        font-size: 1.8rem;
+      }
+      
+      .hero-text p {
+        font-size: 1rem;
+      }
+      
+      .navbar {
+        flex-wrap: wrap;
+      }
+      
+      .navbar a {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+      }
+      
+      section {
+        padding: 40px 15px;
+      }
+      
+      section h2 {
+        font-size: 2rem;
+      }
+      
+      form {
+        padding: 25px;
+      }
+      
+      .float-book {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 18px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===================== HEADER WITH IMAGE SLIDER ===================== -->
+<header class="header">
+  <div class="slider">
+    <img src="img4.jpeg" class="slide active" alt="Temple View 1">
+    <img src="img5.jpeg" class="slide" alt="Temple View 2">
+  </div>
+
+  <div class="hero-text">
+    <img src="img5.jpeg" alt="Temple Logo" class="temple-logo">
+    <h1>🛕 Sri Bramhalingeshwar Temple</h1>
+    <p>Online Seva Booking & Divine Services</p>
+  </div>
+</header>
+
+<!-- ===================== NAVIGATION BAR ===================== -->
+<nav class="navbar">
+  <a href="#about">About</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#sevas">Sevas</a>
+  <a href="#book">Book Seva</a>
+  <a href="#admin-section">Admin</a>
+</nav>
+
+<!-- ===================== ABOUT SECTION ===================== -->
+<section id="about">
+  <h2>About the Temple</h2>
+  <p>
+    Sri Bramhalingeshwar Temple is a sacred place of worship dedicated to Lord Shiva.
+    Devotees can now conveniently book sevas online and receive instant confirmation
+    with PDF receipts and WhatsApp notifications.
+  </p>
+</section>
+
+<!-- ===================== GALLERY SECTION ===================== -->
+<section id="gallery" class="light">
+  <h2>Temple Gallery</h2>
+  <div class="gallery">
+    <img src="img1.jpeg" alt="Temple Interior">
+    <img src="img2.jpeg" alt="Temple Deity">
+  </div>
+</section>
+
+<!-- ===================== AVAILABLE SEVAS ===================== -->
+<section id="sevas">
+  <h2>Available Sevas</h2>
+  <ul>
+    <li>Mangalarathi – ₹50</li>
+    <li>Abhisheka – ₹150</li>
+    <li>Archana – ₹30</li>
+    <li>Mahapooja – ₹500</li>
+  </ul>
+</section>
+
+<!-- ===================== BOOKING FORM SECTION ===================== -->
+<section id="book" class="light">
+  <h2>Book Your Seva</h2>
+
+  <form id="sevaForm" onsubmit="return bookSeva()">
+
+    <label for="name">Name *</label>
+    <input type="text" id="name" placeholder="Enter your full name" required>
+
+    <label for="mobile">Mobile Number *</label>
+    <input type="tel" id="mobile" placeholder="10-digit mobile number" required>
+    <small id="mobileError" class="error-msg">Please enter a valid 10-digit mobile number starting with 6-9</small>
+
+    <label for="seva">Select Seva *</label>
+    <select id="seva" onchange="updatePrice()" required>
+      <option value="">-- Choose Seva --</option>
+      <option value="Mangalarathi" data-price="50">Mangalarathi - ₹50</option>
+      <option value="Abhisheka" data-price="150">Abhisheka - ₹150</option>
+      <option value="Archana" data-price="30">Archana - ₹30</option>
+      <option value="Mahapooja" data-price="500">Mahapooja - ₹500</option>
+    </select>
+
+    <label for="price">Price</label>
+    <input type="text" id="price" readonly placeholder="Select seva to see price">
+
+    <label for="date">Date *</label>
+    <input type="date" id="date" required>
+
+    <label for="time">Time Slot *</label>
+    <select id="time" required>
+      <option value="">-- Select Time --</option>
+      <option value="06:00">6:00 AM</option>
+      <option value="08:00">8:00 AM</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="18:00">6:00 PM</option>
+      <option value="19:00">7:00 PM</option>
+    </select>
+
+    <div class="payment-section">
+      <h3>Payment via UPI / GPay</h3>
+      <p class="payment-note">Scan QR code or click "Pay Now" button</p>
+      <img src="pay.jpeg" class="qr-code" alt="UPI Payment QR Code">
+      <div class="button-group">
+        <button type="button" class="btn-pay" onclick="payNow()">💳 Pay Now via UPI</button>
+        <button type="submit" class="btn-submit">📋 Book Seva & Download Receipt</button>
+      </div>
+    </div>
+  </form>
+
+  <div id="successBox" class="success-msg">
+    ✅ Booking Confirmed! Your receipt has been downloaded and WhatsApp message sent.
+  </div>
+</section>
+
+<!-- ===================== ADMIN LOGIN SECTION ===================== -->
+<section id="admin-section" class="light">
+  <h2>Admin Access</h2>
+  
+  <div id="adminLoginBox" style="max-width: 400px; margin: 30px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    <h3 style="text-align: center; color: #7b1fa2; margin-bottom: 20px;">Admin Login</h3>
+    
+    <label>Username</label>
+    <input type="text" id="adminUser" placeholder="Enter admin username">
+
+    <label>Password</label>
+    <input type="password" id="adminPass" placeholder="Enter password">
+
+    <button onclick="adminLogin()" style="margin-top: 20px;">🔐 Login to Admin Panel</button>
+    
+    <div id="adminError" class="error-msg" style="margin-top: 15px;">❌ Invalid credentials</div>
+    
+    <p style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9rem;">
+      <a href="#" onclick="showAdminRegister(); return false;" style="color: #7b1fa2;">Create Admin Account</a>
+    </p>
+  </div>
+
+  <div id="adminRegisterBox" style="display: none; max-width: 400px; margin: 30px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    <h3 style="text-align: center; color: #7b1fa2; margin-bottom: 20px;">Create Admin Account</h3>
+    
+    <label>Temple Secret Code</label>
+    <input type="password" id="templeCode" placeholder="Enter temple secret code">
+
+    <label>Create Username</label>
+    <input type="text" id="regUser" placeholder="Choose admin username">
+
+    <label>Create Password</label>
+    <input type="password" id="regPass" placeholder="Choose strong password">
+
+    <button onclick="adminRegister()" style="margin-top: 20px;">✅ Create Account</button>
+    
+    <div id="regError" class="error-msg" style="margin-top: 15px;">❌ Invalid temple code</div>
+    
+    <p style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9rem;">
+      <a href="#" onclick="showAdminLogin(); return false;" style="color: #7b1fa2;">← Back to Login</a>
+    </p>
+  </div>
+</section>
+
+<!-- ===================== FLOATING BOOK BUTTON ===================== -->
+<a href="#book" class="float-book">📿 Book Seva</a>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <p>© 2026 Sri Bramhalingeshwar Temple. All rights reserved.</p>
+  <p style="margin-top: 10px; font-size: 0.9rem;">🙏 May Lord Shiva bless you</p>
+</footer>
+
+<!-- ===================== JAVASCRIPT - ALL FUNCTIONALITY ===================== -->
+<script>
+// ========== CONFIGURATION ==========
+const TEMPLE_SECRET_CODE = "BRAMHA2026"; // Change this secret code
+const UPI_ID = "7204132286@fam"; // Change to your temple's UPI ID
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW8jy5QNEoKWHnpuKFpXAHGYbwfzk2L_wsAImA_S6bmNVJ4G2KJ6hKG/exec";
+const ADMIN_SHEET_URL = "https://docs.google.com/spreadsheets/d/1ANa4Qzbotrr2aqo70o8FQJG5Jc5xgtqwzPd3U8JvAVY/edit";
+
+// ========== IMAGE SLIDER ==========
+let slides = document.querySelectorAll(".slide");
+let currentSlide = 0;
+
+setInterval(() => {
+  slides[currentSlide].classList.remove("active");
+  currentSlide = (currentSlide + 1) % slides.length;
+  slides[currentSlide].classList.add("active");
+}, 4000);
+
+// ========== UPDATE PRICE ON SEVA SELECTION ==========
+function updatePrice() {
+  const sevaSelect = document.getElementById("seva");
+  const priceInput = document.getElementById("price");
+  const selectedOption = sevaSelect.options[sevaSelect.selectedIndex];
+  const price = selectedOption.getAttribute("data-price");
+  
+  priceInput.value = price ? "₹" + price : "";
+}
+
+// ========== DATE & TIME RESTRICTIONS ==========
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+
+// Set minimum date to today
+dateInput.min = new Date().toISOString().split("T")[0];
+
+// Disable past times if today is selected
+dateInput.addEventListener("change", () => {
+  const selectedDate = new Date(dateInput.value);
+  const now = new Date();
+
+  // Reset all time options
+  Array.from(timeSelect.options).forEach(opt => opt.disabled = false);
+
+  // If selected date is today, disable past times
+  if (selectedDate.toDateString() === now.toDateString()) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    Array.from(timeSelect.options).forEach(opt => {
+      if (!opt.value) return;
+      const [h, m] = opt.value.split(":").map(Number);
+      const optionMinutes = h * 60 + m;
+      
+      if (optionMinutes <= currentMinutes) {
+        opt.disabled = true;
+      }
+    });
+  }
+  
+  timeSelect.value = "";
+});
+
+// ========== MOBILE NUMBER VALIDATION ==========
+function isValidMobile(number) {
+  return /^[6-9]\d{9}$/.test(number);
+}
+
+// ========== MAIN BOOKING FUNCTION ==========
+function bookSeva() {
+  const name = document.getElementById("name").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const seva = document.getElementById("seva").value;
+  const price = document.getElementById("price").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const mobileError = document.getElementById("mobileError");
+  const successBox = document.getElementById("successBox");
+
+  // Validate mobile number
+  if (!isValidMobile(mobile)) {
+    mobileError.style.display = "block";
+    return false;
+  }
+  mobileError.style.display = "none";
+
+  // Generate PDF receipt
+  generatePDF(name, mobile, seva, price, date, time);
+
+  // Send WhatsApp confirmation
+  sendWhatsApp(name, mobile, seva, price, date, time);
+
+  // Save to Google Sheets (optional)
+  saveToGoogleSheet(name, mobile, seva, price, date, time);
+
+  // Show success message
+  successBox.style.display = "block";
+  
+  // Reset form
+  document.getElementById("sevaForm").reset();
+  
+  // Hide success message after 5 seconds
+  setTimeout(() => {
+    successBox.style.display = "none";
+  }, 5000);
+
+  return false;
+}
+
+// ========== GENERATE PDF RECEIPT ==========
+function generatePDF(name, mobile, seva, price, date, time) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Header
+  doc.setFontSize(20);
+  doc.setFont(undefined, 'bold');
+  doc.text("Sri Bramhalingeshwar Temple", 105, 20, { align: "center" });
+  
+  doc.setFontSize(14);
+  doc.setFont(undefined, 'normal');
+  doc.text("Seva Booking Receipt", 105, 30, { align: "center" });
+  
+  // Horizontal line
+  doc.setLineWidth(0.5);
+  doc.line(20, 35, 190, 35);
+
+  // Booking details
+  doc.setFontSize(12);
+  let y = 50;
+  
+  doc.text("Booking Details:", 20, y);
+  y += 15;
+  
+  doc.text("Name:", 20, y);
+  doc.text(name, 70, y);
+  y += 10;
+  
+  doc.text("Mobile:", 20, y);
+  doc.text(mobile, 70, y);
+  y += 10;
+  
+  doc.text("Seva:", 20, y);
+  doc.text(seva, 70, y);
+  y += 10;
+  
+  doc.text("Price:", 20, y);
+  doc.text(price, 70, y);
+  y += 10;
+  
+  doc.text("Date:", 20, y);
+  doc.text(date, 70, y);
+  y += 10;
+  
+  doc.text("Time:", 20, y);
+  doc.text(time, 70, y);
+  y += 20;
+
+  // Footer
+  doc.setFontSize(10);
+  doc.text("Please show this receipt at the temple.", 105, y, { align: "center" });
+  doc.text("Thank you for your devotion! 🙏", 105, y + 7, { align: "center" });
+
+  // Save PDF
+  doc.save("Seva_Booking_Receipt.pdf");
+}
+
+// ========== SEND WHATSAPP MESSAGE ==========
+function sendWhatsApp(name, mobile, seva, price, date, time) {
+  const message = 
+    "🛕 Sri Bramhalingeshwar Temple 🛕\n\n" +
+    "✅ Your Seva Booking is Confirmed\n\n" +
+    "Name: " + name + "\n" +
+    "Seva: " + seva + "\n" +
+    "Price: " + price + "\n" +
+    "Date: " + date + "\n" +
+    "Time: " + time + "\n\n" +
+    "Please bring this message or PDF receipt to the temple.\n\n" +
+    "🙏 Thank you for your devotion!";
+
+  const whatsappURL = 
+    "https://api.whatsapp.com/send?phone=91" + 
+    mobile + 
+    "&text=" + 
+    encodeURIComponent(message);
+
+  window.open(whatsappURL, "_blank");
+}
+
+// ========== SAVE TO GOOGLE SHEET ==========
+function saveToGoogleSheet(name, mobile, seva, price, date, time) {
+  fetch(GOOGLE_SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      mobile: mobile,
+      seva: seva,
+      price: price,
+      date: date,
+      time: time,
+      timestamp: new Date().toLocaleString()
+    })
+  });
+}
+
+// ========== UPI PAYMENT ==========
+function payNow() {
+  const sevaSelect = document.getElementById("seva");
+  const priceInput = document.getElementById("price");
+
+  if (!sevaSelect.value || !priceInput.value) {
+    alert("⚠️ Please select a seva first to see the price");
+    return;
+  }
+
+  const amount = priceInput.value.replace("₹", "").trim();
+  const sevaName = sevaSelect.value;
+
+  // UPI payment link
+  const upiURL = 
+    "upi://pay?" +
+    "pa=" + UPI_ID + "&" +
+    "pn=Sri Bramhalingeshwar Temple&" +
+    "am=" + amount + "&" +
+    "cu=INR&" +
+    "tn=" + encodeURIComponent("Seva: " + sevaName);
+
+  window.location.href = upiURL;
+}
+
+// ========== ADMIN FUNCTIONALITY ==========
+function showAdminRegister() {
+  document.getElementById("adminLoginBox").style.display = "none";
+  document.getElementById("adminRegisterBox").style.display = "block";
+}
+
+function showAdminLogin() {
+  document.getElementById("adminRegisterBox").style.display = "none";
+  document.getElementById("adminLoginBox").style.display = "block";
+}
+
+function adminRegister() {
+  const code = document.getElementById("templeCode").value;
+  const user = document.getElementById("regUser").value.trim();
+  const pass = document.getElementById("regPass").value.trim();
+  const errorBox = document.getElementById("regError");
+
+  if (!code || !user || !pass) {
+    alert("⚠️ Please fill all fields");
+    return;
+  }
+
+  if (code !== TEMPLE_SECRET_CODE) {
+    errorBox.style.display = "block";
+    setTimeout(() => errorBox.style.display = "none", 3000);
+    return;
+  }
+
+  localStorage.setItem("adminUsername", user);
+  localStorage.setItem("adminPassword", pass);
+
+  alert("✅ Admin account created successfully!");
+  
+  document.getElementById("templeCode").value = "";
+  document.getElementById("regUser").value = "";
+  document.getElementById("regPass").value = "";
+  
+  showAdminLogin();
+}
+
+function adminLogin() {
+  const user = document.getElementById("adminUser").value.trim();
+  const pass = document.getElementById("adminPass").value.trim();
+  const errorBox = document.getElementById("adminError");
+
+  const savedUser = localStorage.getItem("adminUsername");
+  const savedPass = localStorage.getItem("adminPassword");
+
+  if (!savedUser || !savedPass) {
+    alert("⚠️ No admin account found. Please create one first.");
+    showAdminRegister();
+    return;
+  }
+
+  if (user === savedUser && pass === savedPass) {
+    alert("✅ Login successful! Redirecting to admin panel...");
+    window.location.href = ADMIN_SHEET_URL;
+  } else {
+    errorBox.style.display = "block";
+    setTimeout(() => errorBox.style.display = "none", 3000);
+  }
+}
+
+// Allow Enter key to submit
+document.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    const adminLoginVisible = document.getElementById("adminLoginBox").style.display !== "none";
+    const adminRegisterVisible = document.getElementById("adminRegisterBox").style.display === "block";
+    
+    if (adminLoginVisible) {
+      adminLogin();
+    } else if (adminRegisterVisible) {
+      adminRegister();
+    }
+  }
+});
+</script>
+
+</body>
+</html>
