@@ -78,6 +78,12 @@
     .txn-verify input{font-size:.9rem;padding:10px;}
     .btn-verify{background:linear-gradient(135deg,#7b1fa2,#ff6f00);color:white;border:none;border-radius:20px;padding:10px 25px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;margin-top:10px;}
 
+    /* CVV / BOOKING PIN BOX */
+    .booking-pin-box{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:10px;padding:15px;margin-top:12px;text-align:center;border:2px solid #4caf50;display:none;}
+    .booking-pin-box .pin-label{font-size:.85rem;color:#2e7d32;font-weight:600;margin-bottom:4px;}
+    .booking-pin-box .pin-value{font-size:2rem;font-weight:700;color:#1b5e20;letter-spacing:6px;font-family:monospace;}
+    .booking-pin-box .pin-note{font-size:.75rem;color:#555;margin-top:4px;}
+
     /* BUTTONS */
     .button-group{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
     button{width:100%;padding:12px;margin-top:8px;background:linear-gradient(135deg,#7b1fa2,#ff6f00);color:white;border:none;border-radius:30px;font-size:18px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 10px rgba(123,31,162,.3);}
@@ -116,6 +122,8 @@
     .dashboard-header h3{font-size:1.4rem;}
     .btn-logout{background:rgba(255,255,255,.2);border:2px solid white;color:white;border-radius:20px;padding:8px 20px;font-size:.9rem;cursor:pointer;width:auto;margin:0;}
     .btn-logout:hover{background:rgba(255,255,255,.35);}
+    .btn-today{background:rgba(255,215,0,.3);border:2px solid #ffd700;color:white;border-radius:20px;padding:8px 20px;font-size:.9rem;cursor:pointer;width:auto;margin:0;}
+    .btn-today:hover{background:rgba(255,215,0,.5);}
 
     /* STATS CARDS */
     .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin-bottom:25px;}
@@ -149,7 +157,7 @@
     /* MODAL OVERLAY */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:center;justify-content:center;}
     .modal-overlay.show{display:flex;}
-    .modal-box{background:white;border-radius:20px;padding:30px;max-width:420px;width:90%;position:relative;animation:fadeIn .3s ease;}
+    .modal-box{background:white;border-radius:20px;padding:30px;max-width:600px;width:90%;position:relative;animation:fadeIn .3s ease;max-height:90vh;overflow-y:auto;}
     @keyframes fadeIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
     .modal-box h3{color:#7b1fa2;margin-bottom:15px;text-align:center;}
     .modal-close{position:absolute;top:15px;right:18px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;width:auto;margin:0;box-shadow:none;}
@@ -160,6 +168,19 @@
     .pmstep{background:#f9f9f9;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid #7b1fa2;}
     .pmstep strong{display:block;color:#7b1fa2;margin-bottom:4px;font-size:.95rem;}
     .pmstep p{font-size:.88rem;color:#555;text-align:left;margin:0;}
+
+    /* TODAY'S BOOKINGS MODAL */
+    .today-header{background:linear-gradient(135deg,#ff6f00,#ffd700);color:white;padding:15px 20px;border-radius:12px;margin-bottom:15px;text-align:center;}
+    .today-header h4{font-size:1.3rem;}
+    .today-header p{font-size:.85rem;opacity:.9;margin-top:3px;}
+    .today-booking-card{background:#fafafa;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid #7b1fa2;box-shadow:0 2px 6px rgba(0,0,0,.07);}
+    .today-booking-card .tbc-name{font-weight:700;font-size:1rem;color:#333;}
+    .today-booking-card .tbc-seva{color:#7b1fa2;font-size:.9rem;margin-top:2px;}
+    .today-booking-card .tbc-time{font-size:.85rem;color:#666;margin-top:4px;}
+    .today-booking-card .tbc-amount{font-weight:700;color:#2e7d32;font-size:1rem;float:right;}
+    .today-booking-card .tbc-pin{font-size:.78rem;color:#888;font-family:monospace;margin-top:4px;}
+    .time-badge{display:inline-block;background:#7b1fa2;color:white;padding:2px 10px;border-radius:20px;font-size:.8rem;font-weight:600;margin-right:5px;}
+    .no-today{text-align:center;padding:30px;color:#999;font-size:1rem;}
 
     /* RESPONSIVE */
     @media(max-width:768px){
@@ -253,11 +274,11 @@
     <label for="time">Time Slot *</label>
     <select id="time" required>
       <option value="">-- Select Time --</option>
-      <option value="06:00">6:00 AM</option>
-      <option value="08:00">8:00 AM</option>
-      <option value="10:00">10:00 AM</option>
-      <option value="18:00">6:00 PM</option>
-      <option value="19:00">7:00 PM</option>
+      <option value="06:00 AM">6:00 AM</option>
+      <option value="08:00 AM">8:00 AM</option>
+      <option value="10:00 AM">10:00 AM</option>
+      <option value="06:00 PM">6:00 PM</option>
+      <option value="07:00 PM">7:00 PM</option>
     </select>
 
     <!-- PAYMENT SECTION -->
@@ -281,6 +302,13 @@
         <button type="button" class="btn-pay" onclick="payViaUPI()" style="margin-top:10px;">
           💳 Pay via GPay / UPI
         </button>
+      </div>
+
+      <!-- Booking PIN (CVV) shown after form is filled correctly -->
+      <div class="booking-pin-box" id="bookingPinBox">
+        <div class="pin-label">🔐 Booking Security PIN (CVV)</div>
+        <div class="pin-value" id="bookingPinValue">---</div>
+        <div class="pin-note">Show this PIN at the temple counter to verify your booking</div>
       </div>
 
       <!-- Transaction Verification (shown after payment) -->
@@ -328,6 +356,11 @@
     <p style="text-align:center;margin-top:15px;color:#666;font-size:.9rem;">
       <a href="#" onclick="showAdminRegister();return false;" style="color:#7b1fa2;">Create Admin Account</a>
     </p>
+
+    <!-- Show registered account hint if one exists -->
+    <p id="accountExistsHint" style="text-align:center;margin-top:8px;color:#2e7d32;font-size:.82rem;display:none;">
+      ✅ An admin account is registered on this device.
+    </p>
   </div>
 
   <!-- Register Box -->
@@ -358,7 +391,10 @@
         <h3>📊 Temple Admin Dashboard</h3>
         <div style="font-size:.85rem;opacity:.8;margin-top:4px;">Sri Bramhalingeshwar Temple — Bookings & Payments</div>
       </div>
-      <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="btn-today" onclick="openTodayBookings()">📅 Today's Bookings</button>
+        <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
+      </div>
     </div>
 
     <!-- Stats -->
@@ -406,12 +442,13 @@
             <th>Amount</th>
             <th>Payment Method</th>
             <th>Txn ID</th>
+            <th>Booking PIN</th>
             <th>Status</th>
-            <th>Seva Date</th>
+            <th>Seva Date & Time</th>
           </tr>
         </thead>
         <tbody id="bookingsTableBody">
-          <tr><td colspan="10" class="table-empty">No bookings yet</td></tr>
+          <tr><td colspan="11" class="table-empty">No bookings yet</td></tr>
         </tbody>
       </table>
     </div>
@@ -459,7 +496,22 @@
     <h3>Payment Confirmed!</h3>
     <p style="color:#555;margin-bottom:20px;">Your booking is confirmed and receipt PDF has been downloaded.</p>
     <div id="successDetails" style="background:#f5f5f5;border-radius:10px;padding:15px;text-align:left;font-size:.9rem;color:#444;margin-bottom:15px;"></div>
-    <button onclick="closeModal('successModal');document.getElementById('sevaForm').reset();document.getElementById('txnVerifyBox').style.display='none';">🙏 Done</button>
+    <button onclick="closeModal('successModal');resetForm();">🙏 Done</button>
+  </div>
+</div>
+
+<!-- TODAY'S BOOKINGS MODAL -->
+<div class="modal-overlay" id="todayModal">
+  <div class="modal-box" style="max-width:680px;">
+    <button class="modal-close" onclick="closeModal('todayModal')">✕</button>
+    <div class="today-header">
+      <h4>📅 Today's Seva Bookings</h4>
+      <p id="todayDateLabel"></p>
+    </div>
+    <div id="todayBookingsList"></div>
+    <div style="text-align:center;margin-top:15px;">
+      <button onclick="printTodayBookings()" style="width:auto;padding:10px 25px;font-size:.95rem;">🖨️ Print Today's List</button>
+    </div>
   </div>
 </div>
 
@@ -468,14 +520,16 @@
 const TEMPLE_SECRET_CODE = "BRAMHA2026";
 const UPI_ID = "7204132286@fam";
 const TEMPLE_NAME = "Sri Bramhalingeshwar Temple";
+const ADMIN_STORAGE_KEY = "sbTemple_adminCredentials"; // unique key to avoid conflicts
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW8jy5QNEoKWHnpuKFpXAHGYbwfzk2L_wsAImA_S6bmNVJ4G2KJ6hKG/exec";
 
 // ========== STATE ==========
 let loginAttempts = 0;
 let lockoutUntil = 0;
 let captchaAnswer = 0;
-let currentPhonePeAmount = 0;
-let currentPhonePeUPI = "";
+let currentPhonePeURI = "";
+let phonePeData = null;
+let currentBookingPIN = "";
 
 // ========== SLIDER ==========
 let slides = document.querySelectorAll(".slide");
@@ -507,8 +561,14 @@ dateInput.addEventListener("change", () => {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     Array.from(timeSelect.options).forEach(opt => {
       if (!opt.value) return;
-      const [h, m] = opt.value.split(":").map(Number);
-      if ((h * 60 + m) <= currentMinutes) opt.disabled = true;
+      const tval = opt.value;
+      const isPM = tval.includes("PM");
+      let [h, rest] = tval.split(":");
+      let mins = parseInt(rest);
+      h = parseInt(h);
+      if (isPM && h !== 12) h += 12;
+      if (!isPM && h === 12) h = 0;
+      if ((h * 60 + mins) <= currentMinutes) opt.disabled = true;
     });
   }
   timeSelect.value = "";
@@ -525,45 +585,66 @@ function validateFormFields() {
   const time = document.getElementById("time").value;
   const mobileError = document.getElementById("mobileError");
 
-  if (!name || !seva || !date || !time) { alert("⚠️ Please fill all required fields"); return null; }
-  if (!isValidMobile(mobile)) { mobileError.style.display = "block"; return null; }
+  if (!name) { alert("⚠️ Please enter your full name"); return null; }
+  if (!seva) { alert("⚠️ Please select a seva"); return null; }
+  if (!date) { alert("⚠️ Please select a date"); return null; }
+  if (!time) { alert("⚠️ Please select a time slot"); return null; }
+  if (!isValidMobile(mobile)) {
+    mobileError.style.display = "block";
+    return null;
+  }
   mobileError.style.display = "none";
   return { name, mobile, seva, date, time, price: document.getElementById("price").value };
 }
 
-// ========== PHONEPE PAYMENT ==========
-let phonePeData = null;
+// ========== GENERATE BOOKING PIN (CVV) ==========
+function generateBookingPIN() {
+  // 6-digit security PIN (CVV equivalent for booking)
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
-function initiatePhonePePayment() {
+function showBookingPIN() {
   const data = validateFormFields();
+  if (!data) return null;
+  if (!currentBookingPIN) {
+    currentBookingPIN = generateBookingPIN();
+  }
+  document.getElementById("bookingPinValue").textContent = currentBookingPIN;
+  document.getElementById("bookingPinBox").style.display = "block";
+  return data;
+}
+
+// ========== PHONEPE PAYMENT ==========
+function initiatePhonePePayment() {
+  const data = showBookingPIN();
   if (!data) return;
 
   const amount = data.price.replace("₹","").trim();
-  currentPhonePeAmount = amount;
 
-  // Build PhonePe UPI deep link
-  const upiURL = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}&mc=&mode=02&purpose=00`;
-
-  // Also try PhonePe specific scheme
+  // Build UPI deep link - use window.open so page stays intact
+  const upiURL = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}`;
   const phonePeURL = `phonepe://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}`;
 
   phonePeData = { ...data, paymentMethod: "PhonePe" };
-  currentPhonePeUPI = upiURL;
+  currentPhonePeURI = upiURL;
 
-  // Show modal
   document.getElementById("phonePeModalContent").innerHTML = `
     <div style="background:#f3e5f5;border-radius:10px;padding:12px;text-align:center;margin-bottom:15px;">
       <div style="font-size:.9rem;color:#666;">Paying for: <strong>${data.seva}</strong></div>
       <div style="font-size:2rem;font-weight:700;color:#7b1fa2;margin:5px 0;">₹${amount}</div>
       <div style="font-size:.85rem;color:#888;">To: ${TEMPLE_NAME}</div>
+      <div style="font-size:.82rem;color:#555;margin-top:6px;">Booking PIN: <strong style="font-family:monospace;color:#7b1fa2;">${currentBookingPIN}</strong></div>
     </div>`;
 
   document.getElementById("phonePeModal").classList.add("show");
+
+  // FIXED: use window.open instead of location.href so page state is preserved
   window.open(phonePeURL, "_blank");
+  setTimeout(() => { window.open(upiURL, "_blank"); }, 500);
 }
 
 function retryPhonePe() {
-  window.open(currentPhonePeUPI, "_blank");
+  if (currentPhonePeURI) window.open(currentPhonePeURI, "_blank");
 }
 
 function paymentDonePhonePe() {
@@ -574,20 +655,22 @@ function paymentDonePhonePe() {
 
 // ========== UPI / GPAY ==========
 function payViaUPI() {
-  const data = validateFormFields();
+  const data = showBookingPIN();
   if (!data) return;
 
   const amount = data.price.replace("₹","").trim();
   const upiURL = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}`;
 
   phonePeData = { ...data, paymentMethod: "UPI/GPay" };
-  window.location.href = upiURL;
+
+  // FIXED: use window.open so page isn't navigated away
+  window.open(upiURL, "_blank");
 
   // Show txn box after small delay
   setTimeout(() => {
     document.getElementById("txnVerifyBox").style.display = "block";
     document.getElementById("txnVerifyBox").scrollIntoView({ behavior: "smooth" });
-  }, 1500);
+  }, 1000);
 }
 
 // ========== VERIFY TRANSACTION & BOOK ==========
@@ -598,6 +681,9 @@ function verifyAndProceed() {
 
   const data = phonePeData || validateFormFields();
   if (!data) return;
+
+  // Ensure PIN is generated
+  if (!currentBookingPIN) currentBookingPIN = generateBookingPIN();
 
   const booking = {
     id: generateBookingId(),
@@ -610,13 +696,14 @@ function verifyAndProceed() {
     time: data.time,
     paymentMethod: data.paymentMethod || "UPI",
     txnId: txnId,
+    bookingPIN: currentBookingPIN,
     status: "Paid"
   };
 
   // Save to storage
   saveBooking(booking);
 
-  // Save to Google Sheet
+  // Save to Google Sheet (no-cors, fire and forget)
   saveToGoogleSheet(booking);
 
   // Generate PDF
@@ -632,19 +719,22 @@ function verifyAndProceed() {
     <b>Seva:</b> ${booking.seva}<br>
     <b>Amount:</b> ${booking.price}<br>
     <b>Transaction ID:</b> ${booking.txnId}<br>
-    <b>Seva Date:</b> ${booking.date} at ${booking.time}`;
+    <b>Booking PIN (CVV):</b> <span style="font-family:monospace;font-size:1.1rem;color:#7b1fa2;font-weight:700;">${booking.bookingPIN}</span><br>
+    <b>Seva Date & Time:</b> ${booking.date} at ${booking.time}`;
 
   document.getElementById("successModal").classList.add("show");
-
-  // Reset
-  setTimeout(() => {
-    document.getElementById("sevaForm").reset();
-    document.getElementById("txnVerifyBox").style.display = "none";
-    phonePeData = null;
-  }, 500);
 }
 
-// ========== BOOK WITHOUT PAYMENT (fallback) ==========
+// ========== RESET FORM ==========
+function resetForm() {
+  document.getElementById("sevaForm").reset();
+  document.getElementById("txnVerifyBox").style.display = "none";
+  document.getElementById("bookingPinBox").style.display = "none";
+  phonePeData = null;
+  currentBookingPIN = "";
+}
+
+// ========== BOOK (FORM SUBMIT FALLBACK) ==========
 function bookSeva() {
   const data = validateFormFields();
   if (!data) return false;
@@ -666,15 +756,12 @@ function generateEnhancedPDF(booking) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // Background
   doc.setFillColor(248, 240, 255);
   doc.rect(0, 0, 210, 297, "F");
 
-  // Header band
   doc.setFillColor(123, 31, 162);
   doc.rect(0, 0, 210, 45, "F");
 
-  // Temple Name
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(20);
   doc.setFont(undefined, "bold");
@@ -687,7 +774,6 @@ function generateEnhancedPDF(booking) {
   doc.setFontSize(9);
   doc.text(`Booking ID: ${booking.id}  |  Generated: ${booking.timestamp}`, 105, 38, { align: "center" });
 
-  // Status badge
   doc.setFillColor(76, 175, 80);
   doc.roundedRect(75, 48, 60, 12, 3, 3, "F");
   doc.setTextColor(255, 255, 255);
@@ -698,7 +784,7 @@ function generateEnhancedPDF(booking) {
   // Devotee Details Box
   doc.setTextColor(50, 50, 50);
   doc.setFillColor(255, 255, 255);
-  doc.roundedRect(15, 68, 85, 75, 4, 4, "F");
+  doc.roundedRect(15, 68, 85, 80, 4, 4, "F");
   doc.setFontSize(11);
   doc.setFont(undefined, "bold");
   doc.setTextColor(123, 31, 162);
@@ -708,14 +794,7 @@ function generateEnhancedPDF(booking) {
   doc.setFont(undefined, "normal");
   doc.setFontSize(10);
   let y = 88;
-  const details = [
-    ["Name", booking.name],
-    ["Mobile", booking.mobile],
-    ["Seva", booking.seva],
-    ["Date", booking.date],
-    ["Time", booking.time + " IST"]
-  ];
-  details.forEach(([k, v]) => {
+  [["Name", booking.name],["Mobile", booking.mobile],["Seva", booking.seva],["Date", booking.date],["Time", booking.time + " IST"]].forEach(([k,v]) => {
     doc.setFont(undefined, "bold"); doc.text(k + ":", 20, y);
     doc.setFont(undefined, "normal"); doc.text(v, 60, y);
     y += 11;
@@ -723,7 +802,7 @@ function generateEnhancedPDF(booking) {
 
   // Payment Details Box
   doc.setFillColor(255, 255, 255);
-  doc.roundedRect(110, 68, 85, 75, 4, 4, "F");
+  doc.roundedRect(110, 68, 85, 80, 4, 4, "F");
   doc.setFontSize(11);
   doc.setFont(undefined, "bold");
   doc.setTextColor(123, 31, 162);
@@ -733,14 +812,7 @@ function generateEnhancedPDF(booking) {
   doc.setFont(undefined, "normal");
   doc.setFontSize(10);
   y = 88;
-  const payDetails = [
-    ["Amount", booking.price],
-    ["Method", booking.paymentMethod],
-    ["Txn ID", booking.txnId],
-    ["Status", "Paid ✓"],
-    ["UPI ID", UPI_ID]
-  ];
-  payDetails.forEach(([k, v]) => {
+  [["Amount", booking.price],["Method", booking.paymentMethod],["Txn ID", booking.txnId],["Status", "Paid ✓"],["UPI ID", UPI_ID]].forEach(([k,v]) => {
     doc.setFont(undefined, "bold"); doc.text(k + ":", 115, y);
     doc.setFont(undefined, "normal");
     const shortV = v.length > 18 ? v.substring(0, 18) + "..." : v;
@@ -748,20 +820,32 @@ function generateEnhancedPDF(booking) {
     y += 11;
   });
 
+  // Booking PIN (CVV) Box
+  doc.setFillColor(232, 245, 233);
+  doc.roundedRect(15, 152, 180, 28, 4, 4, "F");
+  doc.setFontSize(10);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(46, 125, 50);
+  doc.text("🔐 Booking Security PIN (CVV):", 105, 162, { align: "center" });
+  doc.setFontSize(18);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(27, 94, 32);
+  doc.text(booking.bookingPIN, 105, 174, { align: "center" });
+
   // Instructions
   doc.setFillColor(255, 248, 220);
-  doc.roundedRect(15, 150, 180, 55, 4, 4, "F");
+  doc.roundedRect(15, 185, 180, 55, 4, 4, "F");
   doc.setFontSize(10);
   doc.setFont(undefined, "bold");
   doc.setTextColor(180, 100, 0);
-  doc.text("Instructions for Devotees", 105, 162, { align: "center" });
+  doc.text("Instructions for Devotees", 105, 196, { align: "center" });
   doc.setFont(undefined, "normal");
   doc.setTextColor(100, 70, 0);
   doc.setFontSize(9.5);
-  doc.text("• Please arrive 15 minutes before your booked time slot.", 25, 174);
-  doc.text("• Carry this PDF receipt (print or digital) to the temple.", 25, 183);
-  doc.text("• This receipt is valid only for the booked date and seva.", 25, 192);
-  doc.text("• For queries, contact the temple office.", 25, 201);
+  doc.text("• Please arrive 15 minutes before your booked time slot.", 25, 207);
+  doc.text("• Carry this PDF receipt (print or digital) to the temple.", 25, 216);
+  doc.text("• Show your Booking PIN (CVV) to the temple counter for verification.", 25, 225);
+  doc.text("• This receipt is valid only for the booked date and seva.", 25, 234);
 
   // Footer
   doc.setFillColor(123, 31, 162);
@@ -789,13 +873,14 @@ function sendWhatsApp(booking) {
     `📅 Date: ${booking.date}\n` +
     `⏰ Time: ${booking.time}\n` +
     `💳 Txn ID: ${booking.txnId}\n` +
+    `🔐 Booking PIN: ${booking.bookingPIN}\n` +
     `✅ Status: Payment Confirmed\n\n` +
     `Please carry this receipt to the temple.\n` +
     `🙏 Jai Shiva!`;
   window.open(`https://api.whatsapp.com/send?phone=91${booking.mobile}&text=${encodeURIComponent(message)}`, "_blank");
 }
 
-// ========== SAVE TO GOOGLE SHEET ==========
+// ========== GOOGLE SHEET ==========
 function saveToGoogleSheet(booking) {
   fetch(GOOGLE_SHEET_URL, {
     method: "POST",
@@ -809,15 +894,52 @@ function saveToGoogleSheet(booking) {
 function saveBooking(booking) {
   const bookings = getBookings();
   bookings.push(booking);
-  localStorage.setItem("templeBookings", JSON.stringify(bookings));
+  try {
+    localStorage.setItem("sbTempleBookings", JSON.stringify(bookings));
+  } catch(e) {
+    sessionStorage.setItem("sbTempleBookings", JSON.stringify(bookings));
+  }
 }
 
 function getBookings() {
-  return JSON.parse(localStorage.getItem("templeBookings") || "[]");
+  try {
+    return JSON.parse(localStorage.getItem("sbTempleBookings") || "[]");
+  } catch(e) {
+    return JSON.parse(sessionStorage.getItem("sbTempleBookings") || "[]");
+  }
 }
 
 function generateBookingId() {
   return "TBK" + Date.now().toString().slice(-8);
+}
+
+// ========== ADMIN CREDENTIALS STORAGE ==========
+// FIXED: Using a unified key object to store both username and password together,
+// preventing mismatch issues when one key is saved but not the other.
+function saveAdminCredentials(username, passwordHash) {
+  const creds = { username, passwordHash, createdAt: Date.now() };
+  try {
+    localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(creds));
+    return true;
+  } catch(e) {
+    sessionStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(creds));
+    return true;
+  }
+}
+
+function getAdminCredentials() {
+  try {
+    const raw = localStorage.getItem(ADMIN_STORAGE_KEY) || sessionStorage.getItem(ADMIN_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) {
+    return null;
+  }
+}
+
+function hashPassword(pass) {
+  // Simple hash - same as before using btoa, but consistent
+  return btoa(encodeURIComponent(pass));
 }
 
 // ========== ADMIN: CAPTCHA ==========
@@ -849,37 +971,47 @@ function showAdminRegister() {
 function showAdminLogin() {
   document.getElementById("adminRegisterBox").style.display = "none";
   document.getElementById("adminLoginBox").style.display = "block";
+  // Show hint if account exists
+  const creds = getAdminCredentials();
+  const hint = document.getElementById("accountExistsHint");
+  hint.style.display = creds ? "block" : "none";
 }
 
 function adminRegister() {
   const code = document.getElementById("templeCode").value;
   const user = document.getElementById("regUser").value.trim();
-  const pass = document.getElementById("regPass").value.trim();
+  const pass = document.getElementById("regPass").value;
   const errorBox = document.getElementById("regError");
 
   if (!code || !user || !pass) { alert("⚠️ Please fill all fields"); return; }
   if (pass.length < 8) { alert("⚠️ Password must be at least 8 characters"); return; }
+  if (user.length < 3) { alert("⚠️ Username must be at least 3 characters"); return; }
   if (code !== TEMPLE_SECRET_CODE) {
+    errorBox.textContent = "❌ Invalid temple secret code";
     errorBox.style.display = "block";
     setTimeout(() => errorBox.style.display = "none", 3000);
     return;
   }
 
-  localStorage.setItem("adminUsername", user);
-  localStorage.setItem("adminPassword", btoa(pass)); // basic obfuscation
-  alert("✅ Admin account created successfully!");
-  document.getElementById("templeCode").value = "";
-  document.getElementById("regUser").value = "";
-  document.getElementById("regPass").value = "";
-  showAdminLogin();
+  // FIXED: Save both credentials together in a single key
+  const saved = saveAdminCredentials(user, hashPassword(pass));
+  if (saved) {
+    alert(`✅ Admin account created successfully!\n\nUsername: ${user}\n\nPlease note your credentials and login now.`);
+    document.getElementById("templeCode").value = "";
+    document.getElementById("regUser").value = "";
+    document.getElementById("regPass").value = "";
+    showAdminLogin();
+  } else {
+    alert("❌ Failed to save credentials. Please try again.");
+  }
 }
 
 function adminLogin() {
   const now = Date.now();
-  if (lockoutUntil > now) return; // locked
+  if (lockoutUntil > now) return;
 
   const user = document.getElementById("adminUser").value.trim();
-  const pass = document.getElementById("adminPass").value.trim();
+  const pass = document.getElementById("adminPass").value;
   const captchaInput = parseInt(document.getElementById("captchaAnswer").value);
   const errorBox = document.getElementById("adminError");
 
@@ -894,20 +1026,26 @@ function adminLogin() {
     return;
   }
 
-  const savedUser = localStorage.getItem("adminUsername");
-  const savedPass = localStorage.getItem("adminPassword");
+  // FIXED: Get credentials from unified storage
+  const creds = getAdminCredentials();
 
-  if (!savedUser || !savedPass) {
-    alert("⚠️ No admin account found. Please create one first.");
-    showAdminRegister();
+  if (!creds || !creds.username || !creds.passwordHash) {
+    // FIXED: Better error - directs to register instead of confusing message
+    errorBox.textContent = "❌ No admin account found. Please create one first.";
+    errorBox.style.display = "block";
+    setTimeout(() => {
+      errorBox.style.display = "none";
+      showAdminRegister();
+    }, 2000);
     return;
   }
 
-  if (user === savedUser && btoa(pass) === savedPass) {
+  if (user === creds.username && hashPassword(pass) === creds.passwordHash) {
     loginAttempts = 0;
     document.getElementById("adminLoginBox").style.display = "none";
     document.getElementById("adminDashboard").style.display = "block";
-    localStorage.setItem("adminSession", Date.now().toString());
+    // Save session
+    try { localStorage.setItem("sbTemple_adminSession", Date.now().toString()); } catch(e) {}
     renderAdminDashboard();
   } else {
     errorBox.textContent = "❌ Invalid username or password";
@@ -941,12 +1079,15 @@ function checkLockout() {
 }
 
 function adminLogout() {
-  localStorage.removeItem("adminSession");
+  try { localStorage.removeItem("sbTemple_adminSession"); } catch(e) {}
   document.getElementById("adminDashboard").style.display = "none";
   document.getElementById("adminLoginBox").style.display = "block";
   refreshCaptcha();
   document.getElementById("adminUser").value = "";
   document.getElementById("adminPass").value = "";
+  // Show hint that account exists
+  const creds = getAdminCredentials();
+  document.getElementById("accountExistsHint").style.display = creds ? "block" : "none";
 }
 
 // ========== ADMIN DASHBOARD ==========
@@ -959,8 +1100,10 @@ function updateStats() {
   const bookings = getBookings();
   const paid = bookings.filter(b => b.status === "Paid");
   const revenue = paid.reduce((sum, b) => sum + parseInt(b.price.replace("₹","").trim() || 0), 0);
-  const today = new Date().toLocaleDateString("en-IN");
-  const todayCount = bookings.filter(b => new Date(b.timestamp).toLocaleDateString("en-IN") === today).length;
+  const todayStr = new Date().toLocaleDateString("en-IN");
+  const todayCount = bookings.filter(b => {
+    try { return new Date(b.timestamp).toLocaleDateString("en-IN") === todayStr; } catch(e) { return false; }
+  }).length;
 
   document.getElementById("statTotal").textContent = bookings.length;
   document.getElementById("statPaid").textContent = paid.length;
@@ -986,7 +1129,7 @@ function renderTable() {
 
   const tbody = document.getElementById("bookingsTableBody");
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="10" class="table-empty">No bookings found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="table-empty">No bookings found</td></tr>';
     return;
   }
 
@@ -1000,17 +1143,106 @@ function renderTable() {
       <td style="font-weight:700;color:#2e7d32;">${b.price}</td>
       <td><span class="badge ${b.paymentMethod && b.paymentMethod.includes("PhonePe") ? 'badge-phonepe' : 'badge-upi'}">${b.paymentMethod || "UPI"}</span></td>
       <td style="font-size:.78rem;font-family:monospace;">${b.txnId || "-"}</td>
+      <td style="font-family:monospace;font-weight:700;color:#7b1fa2;">${b.bookingPIN || "-"}</td>
       <td><span class="badge ${b.status === 'Paid' ? 'badge-paid' : 'badge-pending'}">${b.status}</span></td>
-      <td>${b.date} ${b.time}</td>
+      <td style="white-space:nowrap;">${b.date}<br><small style="color:#7b1fa2;">${b.time}</small></td>
     </tr>`).join("");
+}
+
+// ========== TODAY'S BOOKINGS ==========
+function openTodayBookings() {
+  const todayStr = new Date().toLocaleDateString("en-IN");
+  const fullDate = new Date().toLocaleDateString("en-IN", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+
+  document.getElementById("todayDateLabel").textContent = fullDate;
+
+  const bookings = getBookings();
+  const todayBookings = bookings.filter(b => {
+    try { return new Date(b.timestamp).toLocaleDateString("en-IN") === todayStr; } catch(e) { return false; }
+  });
+
+  // Sort by seva date time
+  todayBookings.sort((a, b) => {
+    const ta = a.time || "";
+    const tb = b.time || "";
+    return ta.localeCompare(tb);
+  });
+
+  const listEl = document.getElementById("todayBookingsList");
+
+  if (todayBookings.length === 0) {
+    listEl.innerHTML = '<div class="no-today">📭 No bookings recorded today yet.</div>';
+  } else {
+    listEl.innerHTML = todayBookings.map((b, i) => `
+      <div class="today-booking-card">
+        <span class="tbc-amount">${b.price}</span>
+        <div class="tbc-name">${i + 1}. ${b.name} &nbsp;<small style="color:#888;">📞 ${b.mobile}</small></div>
+        <div class="tbc-seva">🙏 ${b.seva}</div>
+        <div class="tbc-time">
+          <span class="time-badge">⏰ ${b.time}</span>
+          📅 Seva Date: ${b.date}
+        </div>
+        <div class="tbc-pin">Booking PIN: ${b.bookingPIN || "-"} &nbsp;|&nbsp; TxnID: ${b.txnId || "-"} &nbsp;|&nbsp; <span style="color:${b.status==='Paid'?'#2e7d32':'#f57f17'}">${b.status}</span></div>
+      </div>`).join("");
+  }
+
+  document.getElementById("todayModal").classList.add("show");
+}
+
+function printTodayBookings() {
+  const todayStr = new Date().toLocaleDateString("en-IN");
+  const fullDate = new Date().toLocaleDateString("en-IN", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  const bookings = getBookings();
+  const todayBookings = bookings.filter(b => {
+    try { return new Date(b.timestamp).toLocaleDateString("en-IN") === todayStr; } catch(e) { return false; }
+  }).sort((a,b) => (a.time||"").localeCompare(b.time||""));
+
+  const win = window.open("", "_blank");
+  win.document.write(`
+    <html><head><title>Today's Bookings - ${fullDate}</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:20px;color:#333;}
+      h1{color:#7b1fa2;text-align:center;font-size:1.4rem;}
+      h2{text-align:center;font-size:1rem;color:#666;margin-bottom:20px;}
+      table{width:100%;border-collapse:collapse;margin-top:10px;}
+      th{background:#7b1fa2;color:white;padding:10px;text-align:left;font-size:.88rem;}
+      td{padding:9px 10px;border-bottom:1px solid #eee;font-size:.85rem;}
+      tr:nth-child(even) td{background:#f9f9f9;}
+      .footer{text-align:center;margin-top:20px;color:#888;font-size:.8rem;}
+      @media print{button{display:none!important;}}
+    </style></head><body>
+    <h1>🛕 ${TEMPLE_NAME}</h1>
+    <h2>Today's Seva Bookings — ${fullDate}</h2>
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Mobile</th><th>Seva</th><th>Time Slot</th><th>Seva Date</th><th>Amount</th><th>PIN</th><th>Status</th></tr></thead>
+      <tbody>
+        ${todayBookings.length === 0 ? '<tr><td colspan="9" style="text-align:center;padding:20px;color:#999;">No bookings today</td></tr>' :
+          todayBookings.map((b,i) => `
+            <tr>
+              <td>${i+1}</td>
+              <td>${b.name}</td>
+              <td>${b.mobile}</td>
+              <td>${b.seva}</td>
+              <td><strong>${b.time}</strong></td>
+              <td>${b.date}</td>
+              <td><strong>${b.price}</strong></td>
+              <td style="font-family:monospace;">${b.bookingPIN||"-"}</td>
+              <td style="color:${b.status==='Paid'?'green':'orange'}">${b.status}</td>
+            </tr>`).join("")}
+      </tbody>
+    </table>
+    <div class="footer">Total Bookings Today: ${todayBookings.length} &nbsp;|&nbsp; Printed on: ${new Date().toLocaleString("en-IN")}</div>
+    <br><button onclick="window.print()" style="padding:10px 20px;background:#7b1fa2;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">🖨️ Print</button>
+    </body></html>`);
+  win.document.close();
 }
 
 function exportCSV() {
   const bookings = getBookings();
   if (bookings.length === 0) { alert("No bookings to export."); return; }
-  const headers = ["Booking ID","Timestamp","Name","Mobile","Seva","Amount","Payment Method","Transaction ID","Status","Seva Date","Seva Time"];
+  const headers = ["Booking ID","Timestamp","Name","Mobile","Seva","Amount","Payment Method","Transaction ID","Booking PIN","Status","Seva Date","Seva Time"];
   const rows = bookings.map(b => [
-    b.id, b.timestamp, b.name, b.mobile, b.seva, b.price, b.paymentMethod || "UPI", b.txnId || "-", b.status, b.date, b.time
+    b.id, b.timestamp, b.name, b.mobile, b.seva, b.price, b.paymentMethod || "UPI", b.txnId || "-", b.bookingPIN || "-", b.status, b.date, b.time
   ]);
   const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
@@ -1023,7 +1255,8 @@ function exportCSV() {
 function clearAllData() {
   if (confirm("⚠️ Are you sure you want to delete ALL booking records? This cannot be undone.")) {
     if (confirm("🛑 Final confirmation: Delete all records?")) {
-      localStorage.removeItem("templeBookings");
+      try { localStorage.removeItem("sbTempleBookings"); } catch(e) {}
+      try { sessionStorage.removeItem("sbTempleBookings"); } catch(e) {}
       renderAdminDashboard();
       alert("✅ All records cleared.");
     }
@@ -1035,17 +1268,21 @@ function closeModal(id) {
   document.getElementById(id).classList.remove("show");
 }
 
-// Auto-restore admin session if recent
+// ========== AUTO-RESTORE ADMIN SESSION ==========
 window.addEventListener("DOMContentLoaded", () => {
-  const session = localStorage.getItem("adminSession");
-  if (session && Date.now() - parseInt(session) < 3600000) { // 1 hour
-    const savedUser = localStorage.getItem("adminUsername");
-    if (savedUser) {
+  // Check account existence hint on login page
+  const creds = getAdminCredentials();
+  document.getElementById("accountExistsHint").style.display = creds ? "block" : "none";
+
+  // Auto-restore session if within 1 hour
+  try {
+    const session = localStorage.getItem("sbTemple_adminSession");
+    if (session && Date.now() - parseInt(session) < 3600000 && creds) {
       document.getElementById("adminLoginBox").style.display = "none";
       document.getElementById("adminDashboard").style.display = "block";
       renderAdminDashboard();
     }
-  }
+  } catch(e) {}
 });
 
 // Close modals on outside click
