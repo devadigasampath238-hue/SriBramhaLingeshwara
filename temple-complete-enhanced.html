@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sri Bramhalingeshwar Temple - Complete Website</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#fff7e6,#fdebd0);color:#333;line-height:1.6;}
+
+    /* HEADER */
+    .header{position:relative;height:80vh;overflow:hidden;background:black;}
+    .slider{position:absolute;inset:0;}
+    .slide{position:absolute;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s;}
+    .slide.active{opacity:1;}
+    .hero-text{position:relative;z-index:5;text-align:center;color:white;padding-top:25vh;}
+    .temple-logo{width:110px;margin-bottom:15px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.7));}
+    .hero-text h1{font-size:2.5rem;margin-bottom:10px;text-shadow:2px 2px 8px rgba(0,0,0,0.5);}
+    .hero-text p{font-size:1.2rem;opacity:.9;}
+
+    /* NAV */
+    .navbar{position:sticky;top:0;background:rgba(123,31,162,0.95);text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.3);z-index:100;}
+    .navbar a{color:white;text-decoration:none;padding:14px 16px;display:inline-block;font-weight:500;transition:all .3s;border-bottom:3px solid transparent;}
+    .navbar a:hover{background:rgba(255,255,255,.1);border-bottom:3px solid #ffd700;}
+
+    /* SECTIONS */
+    section{padding:60px 20px;max-width:1100px;margin:0 auto;}
+    section.light{background:rgba(255,255,255,.6);border-radius:20px;margin-bottom:30px;}
+    section h2{text-align:center;color:#7b1fa2;font-size:2.5rem;margin-bottom:30px;position:relative;padding-bottom:15px;}
+    section h2::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80px;height:4px;background:linear-gradient(90deg,#ff6f00,#ffd700);border-radius:2px;}
+    section p{text-align:center;font-size:1.1rem;color:#555;max-width:800px;margin:0 auto;}
+
+    /* GALLERY */
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:30px;}
+    .gallery img{width:100%;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.25);transition:transform .3s,box-shadow .3s;cursor:pointer;}
+    .gallery img:hover{transform:scale(1.05);box-shadow:0 15px 35px rgba(0,0,0,.35);}
+
+    /* SEVA LIST */
+    ul{list-style:none;max-width:400px;margin:auto;padding:0;}
+    ul li{background:white;margin:10px 0;padding:15px;border-radius:15px;transition:all .3s;box-shadow:0 3px 10px rgba(0,0,0,.1);}
+    ul li:hover{transform:translateY(-3px);box-shadow:0 6px 15px rgba(123,31,162,.2);}
+
+    /* FORM */
+    form{max-width:480px;margin:30px auto;background:rgba(255,255,255,.75);padding:30px;border-radius:22px;box-shadow:0 5px 20px rgba(0,0,0,.15);}
+    label{display:block;font-weight:600;color:#333;margin-top:18px;margin-bottom:6px;font-size:1rem;}
+    input,select{width:100%;padding:12px;margin-top:8px;border:2px solid #ddd;border-radius:8px;font-size:1rem;transition:border-color .3s;background:#fafafa;}
+    input:focus,select:focus{outline:none;border-color:#7b1fa2;background:white;}
+    input[readonly]{background:#f0f0f0;cursor:not-allowed;}
+    .error-msg{color:#d32f2f;font-size:.85rem;display:none;margin-top:5px;}
+
+    /* PAYMENT SECTION */
+    .payment-section{margin-top:30px;padding:25px;background:linear-gradient(135deg,#fff9e6,#fff3d6);border-radius:12px;border:2px dashed #ffd700;}
+    .payment-section h3{color:#7b1fa2;text-align:center;margin-bottom:10px;}
+    .payment-note{text-align:center;color:#666;font-size:.9rem;margin-bottom:20px;}
+    .qr,.qr-code{width:180px;display:block;margin:15px auto;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,.2);}
+
+    /* PHONEPE SECTION */
+    .phonepe-section{background:linear-gradient(135deg,#5f259f,#8b38f4);border-radius:14px;padding:20px;margin-top:15px;text-align:center;}
+    .phonepe-section h4{color:white;font-size:1.1rem;margin-bottom:8px;}
+    .phonepe-section p{color:rgba(255,255,255,.8);font-size:.85rem;margin-bottom:15px;}
+    .btn-phonepe{background:white;color:#5f259f;border:none;border-radius:30px;padding:12px 30px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:8px;}
+    .btn-phonepe:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}
+    .phonepe-logo{font-size:1.4rem;}
+
+    /* PAYMENT STATUS STEPS */
+    .payment-steps{margin-top:20px;background:white;border-radius:12px;padding:20px;}
+    .payment-steps h4{color:#7b1fa2;margin-bottom:12px;font-size:1rem;}
+    .step{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:.9rem;color:#555;}
+    .step-icon{width:28px;height:28px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;}
+    .step-icon.done{background:#4caf50;color:white;}
+    .step-icon.active{background:#7b1fa2;color:white;}
+
+    /* TXN VERIFY */
+    .txn-verify{background:#f3e5f5;border-radius:10px;padding:15px;margin-top:15px;display:none;}
+    .txn-verify label{color:#7b1fa2;font-size:.9rem;margin-top:8px;}
+    .txn-verify input{font-size:.9rem;padding:10px;}
+    .btn-verify{background:linear-gradient(135deg,#7b1fa2,#ff6f00);color:white;border:none;border-radius:20px;padding:10px 25px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;margin-top:10px;}
+
+    /* BUTTONS */
+    .button-group{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
+    button{width:100%;padding:12px;margin-top:8px;background:linear-gradient(135deg,#7b1fa2,#ff6f00);color:white;border:none;border-radius:30px;font-size:18px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 10px rgba(123,31,162,.3);}
+    button:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(123,31,162,.4);}
+    .btn-pay{background:linear-gradient(135deg,#4caf50,#45a049);box-shadow:0 4px 10px rgba(76,175,80,.3);}
+    .btn-submit{background:linear-gradient(135deg,#7b1fa2,#ff6f00);}
+
+    /* SUCCESS */
+    .success-msg,#successBox{display:none;text-align:center;font-weight:bold;color:green;background:linear-gradient(135deg,#d4edda,#c3e6cb);padding:18px;border-radius:10px;margin-top:25px;border:2px solid #c3e6cb;box-shadow:0 3px 10px rgba(21,87,36,.2);}
+
+    /* FLOAT BUTTON */
+    .float-book{position:fixed;bottom:20px;right:20px;background:#ff6f00;color:white;padding:14px 20px;border-radius:30px;text-decoration:none;font-weight:bold;font-size:1.1rem;box-shadow:0 6px 20px rgba(255,111,0,.4);transition:all .3s;z-index:999;}
+    .float-book:hover{transform:translateY(-3px);}
+
+    /* FOOTER */
+    footer{background:#333;color:white;text-align:center;padding:25px;margin-top:50px;}
+    footer p{color:#ccc;}
+
+    /* ====== ADMIN PANEL ====== */
+    .admin-login-box{max-width:420px;margin:30px auto;background:white;padding:30px;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,.1);}
+    .admin-login-box h3{text-align:center;color:#7b1fa2;margin-bottom:20px;}
+
+    /* CAPTCHA */
+    .captcha-box{background:#f5f5f5;border-radius:10px;padding:14px;margin-top:15px;display:flex;align-items:center;gap:12px;border:2px solid #ddd;}
+    .captcha-question{font-size:1.1rem;font-weight:700;color:#333;flex:1;}
+    .captcha-input{width:80px;padding:8px;border:2px solid #7b1fa2;border-radius:8px;text-align:center;font-size:1rem;font-weight:700;}
+    .captcha-refresh{background:none;border:none;cursor:pointer;font-size:1.2rem;padding:5px;width:auto;margin:0;box-shadow:none;}
+    .captcha-refresh:hover{transform:rotate(180deg);}
+
+    /* LOCKOUT */
+    .lockout-msg{background:#ffebee;border-left:4px solid #d32f2f;color:#d32f2f;padding:12px;border-radius:6px;margin-top:10px;display:none;font-size:.9rem;}
+
+    /* ADMIN DASHBOARD */
+    #adminDashboard{display:none;}
+    .dashboard-header{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#7b1fa2,#4527a0);color:white;padding:20px 30px;border-radius:15px;margin-bottom:20px;}
+    .dashboard-header h3{font-size:1.4rem;}
+    .btn-logout{background:rgba(255,255,255,.2);border:2px solid white;color:white;border-radius:20px;padding:8px 20px;font-size:.9rem;cursor:pointer;width:auto;margin:0;}
+    .btn-logout:hover{background:rgba(255,255,255,.35);}
+
+    /* STATS CARDS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin-bottom:25px;}
+    .stat-card{background:white;border-radius:12px;padding:20px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.08);}
+    .stat-card .stat-num{font-size:2rem;font-weight:700;color:#7b1fa2;}
+    .stat-card .stat-label{font-size:.85rem;color:#888;margin-top:4px;}
+
+    /* TABLE */
+    .table-controls{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;}
+    .search-input{flex:1;padding:10px 15px;border:2px solid #ddd;border-radius:10px;font-size:.95rem;min-width:200px;}
+    .search-input:focus{outline:none;border-color:#7b1fa2;}
+    .filter-select{padding:10px 15px;border:2px solid #ddd;border-radius:10px;font-size:.95rem;}
+    .btn-export{background:linear-gradient(135deg,#2e7d32,#43a047);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:.9rem;cursor:pointer;width:auto;margin:0;box-shadow:none;}
+    .btn-export:hover{transform:translateY(-1px);}
+
+    .bookings-table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.08);}
+    .bookings-table th{background:linear-gradient(135deg,#7b1fa2,#4527a0);color:white;padding:12px 15px;text-align:left;font-size:.9rem;font-weight:600;}
+    .bookings-table td{padding:12px 15px;border-bottom:1px solid #f0f0f0;font-size:.88rem;color:#444;}
+    .bookings-table tr:last-child td{border-bottom:none;}
+    .bookings-table tr:hover td{background:#faf5ff;}
+
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:600;}
+    .badge-paid{background:#e8f5e9;color:#2e7d32;}
+    .badge-pending{background:#fff8e1;color:#f57f17;}
+    .badge-upi{background:#e3f2fd;color:#1565c0;}
+    .badge-phonepe{background:#ede7f6;color:#4527a0;}
+
+    .table-empty{text-align:center;color:#999;padding:40px;font-size:1rem;}
+    .table-container{overflow-x:auto;}
+
+    /* MODAL OVERLAY */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:center;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal-box{background:white;border-radius:20px;padding:30px;max-width:420px;width:90%;position:relative;animation:fadeIn .3s ease;}
+    @keyframes fadeIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+    .modal-box h3{color:#7b1fa2;margin-bottom:15px;text-align:center;}
+    .modal-close{position:absolute;top:15px;right:18px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;width:auto;margin:0;box-shadow:none;}
+    .modal-close:hover{color:#333;}
+
+    /* PAYMENT MODAL */
+    .payment-modal-steps{margin-top:10px;}
+    .pmstep{background:#f9f9f9;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid #7b1fa2;}
+    .pmstep strong{display:block;color:#7b1fa2;margin-bottom:4px;font-size:.95rem;}
+    .pmstep p{font-size:.88rem;color:#555;text-align:left;margin:0;}
+
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      .hero-text{padding-top:20vh;padding-left:20px;padding-right:20px;}
+      .hero-text h1{font-size:1.8rem;}
+      .navbar a{padding:12px 10px;font-size:.85rem;}
+      section{padding:40px 15px;}
+      section h2{font-size:2rem;}
+      .dashboard-header{flex-direction:column;gap:10px;}
+      .bookings-table th,.bookings-table td{padding:9px 10px;font-size:.8rem;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="slider">
+    <img src="img4.jpeg" class="slide active" alt="Temple View 1">
+    <img src="img5.jpeg" class="slide" alt="Temple View 2">
+  </div>
+  <div class="hero-text">
+    <img src="img5.jpeg" alt="Temple Logo" class="temple-logo">
+    <h1>🛕 Sri Bramhalingeshwar Temple</h1>
+    <p>Online Seva Booking & Divine Services</p>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="navbar">
+  <a href="#about">About</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#sevas">Sevas</a>
+  <a href="#book">Book Seva</a>
+  <a href="#admin-section">Admin</a>
+</nav>
+
+<!-- ABOUT -->
+<section id="about">
+  <h2>About the Temple</h2>
+  <p>Sri Bramhalingeshwar Temple is a sacred place of worship dedicated to Lord Shiva. Devotees can now conveniently book sevas online, pay securely via PhonePe / UPI, and receive instant PDF receipts with transaction details.</p>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="light">
+  <h2>Temple Gallery</h2>
+  <div class="gallery">
+    <img src="img1.jpeg" alt="Temple Interior">
+    <img src="img2.jpeg" alt="Temple Deity">
+  </div>
+</section>
+
+<!-- SEVAS -->
+<section id="sevas">
+  <h2>Available Sevas</h2>
+  <ul>
+    <li>🌸 Mangalarathi – ₹50</li>
+    <li>🏺 Abhisheka – ₹150</li>
+    <li>🌺 Archana – ₹30</li>
+    <li>🪔 Mahapooja – ₹500</li>
+  </ul>
+</section>
+
+<!-- BOOKING FORM -->
+<section id="book" class="light">
+  <h2>Book Your Seva</h2>
+  <form id="sevaForm" onsubmit="return bookSeva()">
+
+    <label for="name">Full Name *</label>
+    <input type="text" id="name" placeholder="Enter your full name" required>
+
+    <label for="mobile">Mobile Number *</label>
+    <input type="tel" id="mobile" placeholder="10-digit mobile number" required maxlength="10">
+    <small id="mobileError" class="error-msg">Please enter a valid 10-digit mobile number (6-9 start)</small>
+
+    <label for="seva">Select Seva *</label>
+    <select id="seva" onchange="updatePrice()" required>
+      <option value="">-- Choose Seva --</option>
+      <option value="Mangalarathi" data-price="50">Mangalarathi - ₹50</option>
+      <option value="Abhisheka" data-price="150">Abhisheka - ₹150</option>
+      <option value="Archana" data-price="30">Archana - ₹30</option>
+      <option value="Mahapooja" data-price="500">Mahapooja - ₹500</option>
+    </select>
+
+    <label for="price">Price</label>
+    <input type="text" id="price" readonly placeholder="Select seva to see price">
+
+    <label for="date">Date *</label>
+    <input type="date" id="date" required>
+
+    <label for="time">Time Slot *</label>
+    <select id="time" required>
+      <option value="">-- Select Time --</option>
+      <option value="06:00">6:00 AM</option>
+      <option value="08:00">8:00 AM</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="18:00">6:00 PM</option>
+      <option value="19:00">7:00 PM</option>
+    </select>
+
+    <!-- PAYMENT SECTION -->
+    <div class="payment-section">
+      <h3>💳 Secure Payment</h3>
+      <p class="payment-note">Pay securely via PhonePe, GPay, or any UPI app</p>
+
+      <!-- PhonePe Button -->
+      <div class="phonepe-section">
+        <h4>Recommended: Pay via PhonePe</h4>
+        <p>Fast, secure, and instant payment confirmation</p>
+        <button type="button" class="btn-phonepe" onclick="initiatePhonePePayment()">
+          <span class="phonepe-logo">📱</span> Pay with PhonePe
+        </button>
+      </div>
+
+      <!-- QR / Other UPI -->
+      <div style="margin-top:15px;text-align:center;">
+        <p style="color:#888;font-size:.85rem;margin-bottom:5px;">— OR scan QR code —</p>
+        <img src="pay.jpeg" class="qr-code" alt="UPI QR Code">
+        <button type="button" class="btn-pay" onclick="payViaUPI()" style="margin-top:10px;">
+          💳 Pay via GPay / UPI
+        </button>
+      </div>
+
+      <!-- Transaction Verification (shown after payment) -->
+      <div class="txn-verify" id="txnVerifyBox">
+        <label>Enter PhonePe / UPI Transaction ID *</label>
+        <input type="text" id="txnId" placeholder="e.g. T2501201234567890" maxlength="30">
+        <small style="color:#888;font-size:.8rem;display:block;margin-top:4px;">Find this in your PhonePe app → Transaction History</small>
+        <button type="button" class="btn-verify" onclick="verifyAndProceed()">✅ Confirm Payment & Generate Receipt</button>
+      </div>
+    </div>
+  </form>
+
+  <div id="successBox" class="success-msg">
+    ✅ Booking Confirmed! Your PDF receipt has been downloaded. Check WhatsApp for confirmation.
+  </div>
+</section>
+
+<!-- ADMIN SECTION -->
+<section id="admin-section" class="light">
+  <h2>Admin Access</h2>
+
+  <!-- Login Box -->
+  <div id="adminLoginBox" class="admin-login-box">
+    <h3>🔐 Admin Login</h3>
+
+    <label>Username</label>
+    <input type="text" id="adminUser" placeholder="Admin username" autocomplete="off">
+
+    <label>Password</label>
+    <input type="password" id="adminPass" placeholder="Admin password">
+
+    <!-- CAPTCHA -->
+    <div class="captcha-box" style="margin-top:15px;">
+      <span class="captcha-question" id="captchaQuestion">Loading...</span>
+      <input type="number" id="captchaAnswer" class="captcha-input" placeholder="?">
+      <button type="button" class="captcha-refresh" onclick="refreshCaptcha()" title="Refresh">🔄</button>
+    </div>
+    <small style="color:#888;font-size:.8rem;margin-top:4px;display:block;">Solve the math question to proceed</small>
+
+    <div id="lockoutMsg" class="lockout-msg">🔒 Too many failed attempts. Try again after <span id="lockTimer">60</span>s.</div>
+    <div id="adminError" class="error-msg" style="margin-top:10px;">❌ Invalid credentials or CAPTCHA</div>
+
+    <button onclick="adminLogin()" style="margin-top:20px;">🔐 Login to Admin Panel</button>
+
+    <p style="text-align:center;margin-top:15px;color:#666;font-size:.9rem;">
+      <a href="#" onclick="showAdminRegister();return false;" style="color:#7b1fa2;">Create Admin Account</a>
+    </p>
+  </div>
+
+  <!-- Register Box -->
+  <div id="adminRegisterBox" style="display:none;" class="admin-login-box">
+    <h3>✨ Create Admin Account</h3>
+
+    <label>Temple Secret Code</label>
+    <input type="password" id="templeCode" placeholder="Enter temple secret code">
+
+    <label>Create Username</label>
+    <input type="text" id="regUser" placeholder="Choose admin username">
+
+    <label>Create Password</label>
+    <input type="password" id="regPass" placeholder="Choose strong password (8+ chars)">
+
+    <div id="regError" class="error-msg" style="margin-top:10px;">❌ Invalid temple code</div>
+
+    <button onclick="adminRegister()" style="margin-top:20px;">✅ Create Account</button>
+    <p style="text-align:center;margin-top:15px;color:#666;font-size:.9rem;">
+      <a href="#" onclick="showAdminLogin();return false;" style="color:#7b1fa2;">← Back to Login</a>
+    </p>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard">
+    <div class="dashboard-header">
+      <div>
+        <h3>📊 Temple Admin Dashboard</h3>
+        <div style="font-size:.85rem;opacity:.8;margin-top:4px;">Sri Bramhalingeshwar Temple — Bookings & Payments</div>
+      </div>
+      <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">Total Bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statPaid">0</div>
+        <div class="stat-label">Paid Bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statRevenue">₹0</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statToday">0</div>
+        <div class="stat-label">Today's Bookings</div>
+      </div>
+    </div>
+
+    <!-- Table Controls -->
+    <div class="table-controls">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, mobile, seva..." oninput="renderTable()">
+      <select class="filter-select" id="filterStatus" onchange="renderTable()">
+        <option value="">All Status</option>
+        <option value="Paid">Paid</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <button class="btn-export" onclick="exportCSV()">⬇️ Export CSV</button>
+      <button class="btn-export" onclick="clearAllData()" style="background:linear-gradient(135deg,#c62828,#e53935);">🗑️ Clear All</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date/Time</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Seva</th>
+            <th>Amount</th>
+            <th>Payment Method</th>
+            <th>Txn ID</th>
+            <th>Status</th>
+            <th>Seva Date</th>
+          </tr>
+        </thead>
+        <tbody id="bookingsTableBody">
+          <tr><td colspan="10" class="table-empty">No bookings yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FLOAT -->
+<a href="#book" class="float-book">📿 Book Seva</a>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Sri Bramhalingeshwar Temple. All rights reserved.</p>
+  <p style="margin-top:10px;font-size:.9rem;">🙏 May Lord Shiva bless you</p>
+</footer>
+
+<!-- PHONEPE MODAL -->
+<div class="modal-overlay" id="phonePeModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('phonePeModal')">✕</button>
+    <h3>📱 PhonePe Payment</h3>
+    <div id="phonePeModalContent"></div>
+    <div class="payment-modal-steps">
+      <div class="pmstep">
+        <strong>Step 1: Open PhonePe App</strong>
+        <p>The payment link has been opened. If it didn't open, tap the button below.</p>
+      </div>
+      <div class="pmstep">
+        <strong>Step 2: Complete Payment</strong>
+        <p>Enter your UPI PIN and complete the payment of the seva amount.</p>
+      </div>
+      <div class="pmstep">
+        <strong>Step 3: Note Transaction ID</strong>
+        <p>After payment, go to PhonePe → Transaction History and copy the Transaction ID.</p>
+      </div>
+    </div>
+    <button type="button" onclick="retryPhonePe()" class="btn-verify" style="margin-top:10px;">📱 Open PhonePe Again</button>
+    <button type="button" onclick="paymentDonePhonePe()" class="btn-verify" style="margin-top:8px;background:linear-gradient(135deg,#2e7d32,#43a047);">✅ I've Paid — Enter Transaction ID</button>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL (PDF ready) -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box" style="text-align:center;">
+    <div style="font-size:4rem;margin-bottom:10px;">✅</div>
+    <h3>Payment Confirmed!</h3>
+    <p style="color:#555;margin-bottom:20px;">Your booking is confirmed and receipt PDF has been downloaded.</p>
+    <div id="successDetails" style="background:#f5f5f5;border-radius:10px;padding:15px;text-align:left;font-size:.9rem;color:#444;margin-bottom:15px;"></div>
+    <button onclick="closeModal('successModal');document.getElementById('sevaForm').reset();document.getElementById('txnVerifyBox').style.display='none';">🙏 Done</button>
+  </div>
+</div>
+
+<script>
+// ========== CONFIG ==========
+const TEMPLE_SECRET_CODE = "BRAMHA2026";
+const UPI_ID = "7204132286@fam";
+const TEMPLE_NAME = "Sri Bramhalingeshwar Temple";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW8jy5QNEoKWHnpuKFpXAHGYbwfzk2L_wsAImA_S6bmNVJ4G2KJ6hKG/exec";
+
+// ========== STATE ==========
+let loginAttempts = 0;
+let lockoutUntil = 0;
+let captchaAnswer = 0;
+let currentPhonePeAmount = 0;
+let currentPhonePeUPI = "";
+
+// ========== SLIDER ==========
+let slides = document.querySelectorAll(".slide");
+let currentSlide = 0;
+setInterval(() => {
+  slides[currentSlide].classList.remove("active");
+  currentSlide = (currentSlide + 1) % slides.length;
+  slides[currentSlide].classList.add("active");
+}, 4000);
+
+// ========== PRICE UPDATE ==========
+function updatePrice() {
+  const sevaSelect = document.getElementById("seva");
+  const priceInput = document.getElementById("price");
+  const price = sevaSelect.options[sevaSelect.selectedIndex].getAttribute("data-price");
+  priceInput.value = price ? "₹" + price : "";
+}
+
+// ========== DATE RESTRICTIONS ==========
+const dateInput = document.getElementById("date");
+const timeSelect = document.getElementById("time");
+dateInput.min = new Date().toISOString().split("T")[0];
+
+dateInput.addEventListener("change", () => {
+  const selectedDate = new Date(dateInput.value);
+  const now = new Date();
+  Array.from(timeSelect.options).forEach(opt => opt.disabled = false);
+  if (selectedDate.toDateString() === now.toDateString()) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    Array.from(timeSelect.options).forEach(opt => {
+      if (!opt.value) return;
+      const [h, m] = opt.value.split(":").map(Number);
+      if ((h * 60 + m) <= currentMinutes) opt.disabled = true;
+    });
+  }
+  timeSelect.value = "";
+});
+
+// ========== VALIDATION ==========
+function isValidMobile(num) { return /^[6-9]\d{9}$/.test(num); }
+
+function validateFormFields() {
+  const name = document.getElementById("name").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const seva = document.getElementById("seva").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const mobileError = document.getElementById("mobileError");
+
+  if (!name || !seva || !date || !time) { alert("⚠️ Please fill all required fields"); return null; }
+  if (!isValidMobile(mobile)) { mobileError.style.display = "block"; return null; }
+  mobileError.style.display = "none";
+  return { name, mobile, seva, date, time, price: document.getElementById("price").value };
+}
+
+// ========== PHONEPE PAYMENT ==========
+let phonePeData = null;
+
+function initiatePhonePePayment() {
+  const data = validateFormFields();
+  if (!data) return;
+
+  const amount = data.price.replace("₹","").trim();
+  currentPhonePeAmount = amount;
+
+  // Build PhonePe UPI deep link
+  const upiURL = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}&mc=&mode=02&purpose=00`;
+
+  // Also try PhonePe specific scheme
+  const phonePeURL = `phonepe://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}`;
+
+  phonePeData = { ...data, paymentMethod: "PhonePe" };
+  currentPhonePeUPI = upiURL;
+
+  // Show modal
+  document.getElementById("phonePeModalContent").innerHTML = `
+    <div style="background:#f3e5f5;border-radius:10px;padding:12px;text-align:center;margin-bottom:15px;">
+      <div style="font-size:.9rem;color:#666;">Paying for: <strong>${data.seva}</strong></div>
+      <div style="font-size:2rem;font-weight:700;color:#7b1fa2;margin:5px 0;">₹${amount}</div>
+      <div style="font-size:.85rem;color:#888;">To: ${TEMPLE_NAME}</div>
+    </div>`;
+
+  document.getElementById("phonePeModal").classList.add("show");
+  window.open(phonePeURL, "_blank");
+}
+
+function retryPhonePe() {
+  window.open(currentPhonePeUPI, "_blank");
+}
+
+function paymentDonePhonePe() {
+  closeModal("phonePeModal");
+  document.getElementById("txnVerifyBox").style.display = "block";
+  document.getElementById("txnVerifyBox").scrollIntoView({ behavior: "smooth" });
+}
+
+// ========== UPI / GPAY ==========
+function payViaUPI() {
+  const data = validateFormFields();
+  if (!data) return;
+
+  const amount = data.price.replace("₹","").trim();
+  const upiURL = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(TEMPLE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent("Seva: " + data.seva)}`;
+
+  phonePeData = { ...data, paymentMethod: "UPI/GPay" };
+  window.location.href = upiURL;
+
+  // Show txn box after small delay
+  setTimeout(() => {
+    document.getElementById("txnVerifyBox").style.display = "block";
+    document.getElementById("txnVerifyBox").scrollIntoView({ behavior: "smooth" });
+  }, 1500);
+}
+
+// ========== VERIFY TRANSACTION & BOOK ==========
+function verifyAndProceed() {
+  const txnId = document.getElementById("txnId").value.trim();
+  if (!txnId) { alert("⚠️ Please enter your Transaction ID from PhonePe / UPI app"); return; }
+  if (txnId.length < 8) { alert("⚠️ Transaction ID seems too short. Please check and re-enter."); return; }
+
+  const data = phonePeData || validateFormFields();
+  if (!data) return;
+
+  const booking = {
+    id: generateBookingId(),
+    timestamp: new Date().toLocaleString("en-IN"),
+    name: data.name,
+    mobile: data.mobile,
+    seva: data.seva,
+    price: data.price,
+    date: data.date,
+    time: data.time,
+    paymentMethod: data.paymentMethod || "UPI",
+    txnId: txnId,
+    status: "Paid"
+  };
+
+  // Save to storage
+  saveBooking(booking);
+
+  // Save to Google Sheet
+  saveToGoogleSheet(booking);
+
+  // Generate PDF
+  generateEnhancedPDF(booking);
+
+  // Send WhatsApp
+  sendWhatsApp(booking);
+
+  // Show success modal
+  document.getElementById("successDetails").innerHTML = `
+    <b>Booking ID:</b> ${booking.id}<br>
+    <b>Name:</b> ${booking.name}<br>
+    <b>Seva:</b> ${booking.seva}<br>
+    <b>Amount:</b> ${booking.price}<br>
+    <b>Transaction ID:</b> ${booking.txnId}<br>
+    <b>Seva Date:</b> ${booking.date} at ${booking.time}`;
+
+  document.getElementById("successModal").classList.add("show");
+
+  // Reset
+  setTimeout(() => {
+    document.getElementById("sevaForm").reset();
+    document.getElementById("txnVerifyBox").style.display = "none";
+    phonePeData = null;
+  }, 500);
+}
+
+// ========== BOOK WITHOUT PAYMENT (fallback) ==========
+function bookSeva() {
+  const data = validateFormFields();
+  if (!data) return false;
+
+  const txnId = document.getElementById("txnId").value.trim();
+  if (!txnId) {
+    alert("⚠️ Please complete payment first and enter your Transaction ID.");
+    document.getElementById("txnVerifyBox").style.display = "block";
+    document.getElementById("txnVerifyBox").scrollIntoView({ behavior: "smooth" });
+    return false;
+  }
+
+  verifyAndProceed();
+  return false;
+}
+
+// ========== GENERATE ENHANCED PDF ==========
+function generateEnhancedPDF(booking) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Background
+  doc.setFillColor(248, 240, 255);
+  doc.rect(0, 0, 210, 297, "F");
+
+  // Header band
+  doc.setFillColor(123, 31, 162);
+  doc.rect(0, 0, 210, 45, "F");
+
+  // Temple Name
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont(undefined, "bold");
+  doc.text(TEMPLE_NAME, 105, 18, { align: "center" });
+
+  doc.setFontSize(11);
+  doc.setFont(undefined, "normal");
+  doc.text("Seva Booking Receipt & Payment Confirmation", 105, 28, { align: "center" });
+
+  doc.setFontSize(9);
+  doc.text(`Booking ID: ${booking.id}  |  Generated: ${booking.timestamp}`, 105, 38, { align: "center" });
+
+  // Status badge
+  doc.setFillColor(76, 175, 80);
+  doc.roundedRect(75, 48, 60, 12, 3, 3, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(11);
+  doc.setFont(undefined, "bold");
+  doc.text("✓  PAYMENT CONFIRMED", 105, 57, { align: "center" });
+
+  // Devotee Details Box
+  doc.setTextColor(50, 50, 50);
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(15, 68, 85, 75, 4, 4, "F");
+  doc.setFontSize(11);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(123, 31, 162);
+  doc.text("Devotee Details", 57.5, 78, { align: "center" });
+
+  doc.setTextColor(80, 80, 80);
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(10);
+  let y = 88;
+  const details = [
+    ["Name", booking.name],
+    ["Mobile", booking.mobile],
+    ["Seva", booking.seva],
+    ["Date", booking.date],
+    ["Time", booking.time + " IST"]
+  ];
+  details.forEach(([k, v]) => {
+    doc.setFont(undefined, "bold"); doc.text(k + ":", 20, y);
+    doc.setFont(undefined, "normal"); doc.text(v, 60, y);
+    y += 11;
+  });
+
+  // Payment Details Box
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(110, 68, 85, 75, 4, 4, "F");
+  doc.setFontSize(11);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(123, 31, 162);
+  doc.text("Payment Details", 152.5, 78, { align: "center" });
+
+  doc.setTextColor(80, 80, 80);
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(10);
+  y = 88;
+  const payDetails = [
+    ["Amount", booking.price],
+    ["Method", booking.paymentMethod],
+    ["Txn ID", booking.txnId],
+    ["Status", "Paid ✓"],
+    ["UPI ID", UPI_ID]
+  ];
+  payDetails.forEach(([k, v]) => {
+    doc.setFont(undefined, "bold"); doc.text(k + ":", 115, y);
+    doc.setFont(undefined, "normal");
+    const shortV = v.length > 18 ? v.substring(0, 18) + "..." : v;
+    doc.text(shortV, 148, y);
+    y += 11;
+  });
+
+  // Instructions
+  doc.setFillColor(255, 248, 220);
+  doc.roundedRect(15, 150, 180, 55, 4, 4, "F");
+  doc.setFontSize(10);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(180, 100, 0);
+  doc.text("Instructions for Devotees", 105, 162, { align: "center" });
+  doc.setFont(undefined, "normal");
+  doc.setTextColor(100, 70, 0);
+  doc.setFontSize(9.5);
+  doc.text("• Please arrive 15 minutes before your booked time slot.", 25, 174);
+  doc.text("• Carry this PDF receipt (print or digital) to the temple.", 25, 183);
+  doc.text("• This receipt is valid only for the booked date and seva.", 25, 192);
+  doc.text("• For queries, contact the temple office.", 25, 201);
+
+  // Footer
+  doc.setFillColor(123, 31, 162);
+  doc.rect(0, 270, 210, 27, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont(undefined, "bold");
+  doc.text(`${TEMPLE_NAME}`, 105, 281, { align: "center" });
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(9);
+  doc.text("🙏 May Lord Shiva bless you with health, wealth, and prosperity 🙏", 105, 290, { align: "center" });
+
+  doc.save(`Temple_Receipt_${booking.id}.pdf`);
+}
+
+// ========== WHATSAPP ==========
+function sendWhatsApp(booking) {
+  const message =
+    `🛕 ${TEMPLE_NAME} 🛕\n\n` +
+    `✅ Seva Booking Confirmed!\n\n` +
+    `📋 Booking ID: ${booking.id}\n` +
+    `👤 Name: ${booking.name}\n` +
+    `🙏 Seva: ${booking.seva}\n` +
+    `💰 Amount: ${booking.price}\n` +
+    `📅 Date: ${booking.date}\n` +
+    `⏰ Time: ${booking.time}\n` +
+    `💳 Txn ID: ${booking.txnId}\n` +
+    `✅ Status: Payment Confirmed\n\n` +
+    `Please carry this receipt to the temple.\n` +
+    `🙏 Jai Shiva!`;
+  window.open(`https://api.whatsapp.com/send?phone=91${booking.mobile}&text=${encodeURIComponent(message)}`, "_blank");
+}
+
+// ========== SAVE TO GOOGLE SHEET ==========
+function saveToGoogleSheet(booking) {
+  fetch(GOOGLE_SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(booking)
+  }).catch(() => {});
+}
+
+// ========== LOCAL STORAGE (BOOKINGS) ==========
+function saveBooking(booking) {
+  const bookings = getBookings();
+  bookings.push(booking);
+  localStorage.setItem("templeBookings", JSON.stringify(bookings));
+}
+
+function getBookings() {
+  return JSON.parse(localStorage.getItem("templeBookings") || "[]");
+}
+
+function generateBookingId() {
+  return "TBK" + Date.now().toString().slice(-8);
+}
+
+// ========== ADMIN: CAPTCHA ==========
+let captchaNum1 = 0, captchaNum2 = 0, captchaOp = "+";
+
+function refreshCaptcha() {
+  captchaNum1 = Math.floor(Math.random() * 12) + 1;
+  captchaNum2 = Math.floor(Math.random() * 12) + 1;
+  const ops = ["+", "-", "×"];
+  captchaOp = ops[Math.floor(Math.random() * 3)];
+  if (captchaOp === "-" && captchaNum2 > captchaNum1) {
+    [captchaNum1, captchaNum2] = [captchaNum2, captchaNum1];
+  }
+  captchaAnswer = captchaOp === "+" ? captchaNum1 + captchaNum2
+    : captchaOp === "-" ? captchaNum1 - captchaNum2
+    : captchaNum1 * captchaNum2;
+  document.getElementById("captchaQuestion").textContent = `${captchaNum1} ${captchaOp} ${captchaNum2} = ?`;
+  document.getElementById("captchaAnswer").value = "";
+}
+
+refreshCaptcha();
+
+// ========== ADMIN: LOGIN / REGISTER ==========
+function showAdminRegister() {
+  document.getElementById("adminLoginBox").style.display = "none";
+  document.getElementById("adminRegisterBox").style.display = "block";
+}
+
+function showAdminLogin() {
+  document.getElementById("adminRegisterBox").style.display = "none";
+  document.getElementById("adminLoginBox").style.display = "block";
+}
+
+function adminRegister() {
+  const code = document.getElementById("templeCode").value;
+  const user = document.getElementById("regUser").value.trim();
+  const pass = document.getElementById("regPass").value.trim();
+  const errorBox = document.getElementById("regError");
+
+  if (!code || !user || !pass) { alert("⚠️ Please fill all fields"); return; }
+  if (pass.length < 8) { alert("⚠️ Password must be at least 8 characters"); return; }
+  if (code !== TEMPLE_SECRET_CODE) {
+    errorBox.style.display = "block";
+    setTimeout(() => errorBox.style.display = "none", 3000);
+    return;
+  }
+
+  localStorage.setItem("adminUsername", user);
+  localStorage.setItem("adminPassword", btoa(pass)); // basic obfuscation
+  alert("✅ Admin account created successfully!");
+  document.getElementById("templeCode").value = "";
+  document.getElementById("regUser").value = "";
+  document.getElementById("regPass").value = "";
+  showAdminLogin();
+}
+
+function adminLogin() {
+  const now = Date.now();
+  if (lockoutUntil > now) return; // locked
+
+  const user = document.getElementById("adminUser").value.trim();
+  const pass = document.getElementById("adminPass").value.trim();
+  const captchaInput = parseInt(document.getElementById("captchaAnswer").value);
+  const errorBox = document.getElementById("adminError");
+
+  // CAPTCHA check
+  if (isNaN(captchaInput) || captchaInput !== captchaAnswer) {
+    errorBox.textContent = "❌ Wrong CAPTCHA answer. Please try again.";
+    errorBox.style.display = "block";
+    refreshCaptcha();
+    setTimeout(() => errorBox.style.display = "none", 3000);
+    loginAttempts++;
+    checkLockout();
+    return;
+  }
+
+  const savedUser = localStorage.getItem("adminUsername");
+  const savedPass = localStorage.getItem("adminPassword");
+
+  if (!savedUser || !savedPass) {
+    alert("⚠️ No admin account found. Please create one first.");
+    showAdminRegister();
+    return;
+  }
+
+  if (user === savedUser && btoa(pass) === savedPass) {
+    loginAttempts = 0;
+    document.getElementById("adminLoginBox").style.display = "none";
+    document.getElementById("adminDashboard").style.display = "block";
+    localStorage.setItem("adminSession", Date.now().toString());
+    renderAdminDashboard();
+  } else {
+    errorBox.textContent = "❌ Invalid username or password";
+    errorBox.style.display = "block";
+    refreshCaptcha();
+    setTimeout(() => errorBox.style.display = "none", 3000);
+    loginAttempts++;
+    checkLockout();
+  }
+}
+
+function checkLockout() {
+  if (loginAttempts >= 5) {
+    const lockoutSeconds = 60;
+    lockoutUntil = Date.now() + lockoutSeconds * 1000;
+    loginAttempts = 0;
+    const lockMsg = document.getElementById("lockoutMsg");
+    lockMsg.style.display = "block";
+    let remaining = lockoutSeconds;
+    document.getElementById("lockTimer").textContent = remaining;
+    const timer = setInterval(() => {
+      remaining--;
+      document.getElementById("lockTimer").textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(timer);
+        lockMsg.style.display = "none";
+        refreshCaptcha();
+      }
+    }, 1000);
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem("adminSession");
+  document.getElementById("adminDashboard").style.display = "none";
+  document.getElementById("adminLoginBox").style.display = "block";
+  refreshCaptcha();
+  document.getElementById("adminUser").value = "";
+  document.getElementById("adminPass").value = "";
+}
+
+// ========== ADMIN DASHBOARD ==========
+function renderAdminDashboard() {
+  updateStats();
+  renderTable();
+}
+
+function updateStats() {
+  const bookings = getBookings();
+  const paid = bookings.filter(b => b.status === "Paid");
+  const revenue = paid.reduce((sum, b) => sum + parseInt(b.price.replace("₹","").trim() || 0), 0);
+  const today = new Date().toLocaleDateString("en-IN");
+  const todayCount = bookings.filter(b => new Date(b.timestamp).toLocaleDateString("en-IN") === today).length;
+
+  document.getElementById("statTotal").textContent = bookings.length;
+  document.getElementById("statPaid").textContent = paid.length;
+  document.getElementById("statRevenue").textContent = "₹" + revenue.toLocaleString("en-IN");
+  document.getElementById("statToday").textContent = todayCount;
+}
+
+function renderTable() {
+  const bookings = getBookings();
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const statusFilter = document.getElementById("filterStatus").value;
+
+  let filtered = bookings.filter(b => {
+    const matchSearch = !search ||
+      b.name.toLowerCase().includes(search) ||
+      b.mobile.includes(search) ||
+      b.seva.toLowerCase().includes(search) ||
+      (b.txnId || "").toLowerCase().includes(search) ||
+      (b.id || "").toLowerCase().includes(search);
+    const matchStatus = !statusFilter || b.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  const tbody = document.getElementById("bookingsTableBody");
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="table-empty">No bookings found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.reverse().map((b, i) => `
+    <tr>
+      <td>${filtered.length - i}</td>
+      <td style="white-space:nowrap;font-size:.8rem;">${b.timestamp || "-"}</td>
+      <td><strong>${b.name}</strong></td>
+      <td>${b.mobile}</td>
+      <td>${b.seva}</td>
+      <td style="font-weight:700;color:#2e7d32;">${b.price}</td>
+      <td><span class="badge ${b.paymentMethod && b.paymentMethod.includes("PhonePe") ? 'badge-phonepe' : 'badge-upi'}">${b.paymentMethod || "UPI"}</span></td>
+      <td style="font-size:.78rem;font-family:monospace;">${b.txnId || "-"}</td>
+      <td><span class="badge ${b.status === 'Paid' ? 'badge-paid' : 'badge-pending'}">${b.status}</span></td>
+      <td>${b.date} ${b.time}</td>
+    </tr>`).join("");
+}
+
+function exportCSV() {
+  const bookings = getBookings();
+  if (bookings.length === 0) { alert("No bookings to export."); return; }
+  const headers = ["Booking ID","Timestamp","Name","Mobile","Seva","Amount","Payment Method","Transaction ID","Status","Seva Date","Seva Time"];
+  const rows = bookings.map(b => [
+    b.id, b.timestamp, b.name, b.mobile, b.seva, b.price, b.paymentMethod || "UPI", b.txnId || "-", b.status, b.date, b.time
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Temple_Bookings_${new Date().toLocaleDateString("en-IN").replace(/\//g,"-")}.csv`;
+  a.click();
+}
+
+function clearAllData() {
+  if (confirm("⚠️ Are you sure you want to delete ALL booking records? This cannot be undone.")) {
+    if (confirm("🛑 Final confirmation: Delete all records?")) {
+      localStorage.removeItem("templeBookings");
+      renderAdminDashboard();
+      alert("✅ All records cleared.");
+    }
+  }
+}
+
+// ========== MODAL UTILS ==========
+function closeModal(id) {
+  document.getElementById(id).classList.remove("show");
+}
+
+// Auto-restore admin session if recent
+window.addEventListener("DOMContentLoaded", () => {
+  const session = localStorage.getItem("adminSession");
+  if (session && Date.now() - parseInt(session) < 3600000) { // 1 hour
+    const savedUser = localStorage.getItem("adminUsername");
+    if (savedUser) {
+      document.getElementById("adminLoginBox").style.display = "none";
+      document.getElementById("adminDashboard").style.display = "block";
+      renderAdminDashboard();
+    }
+  }
+});
+
+// Close modals on outside click
+document.querySelectorAll(".modal-overlay").forEach(m => {
+  m.addEventListener("click", e => {
+    if (e.target === m) m.classList.remove("show");
+  });
+});
+</script>
+</body>
+</html>
