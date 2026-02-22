@@ -472,19 +472,19 @@
     <div id="phonePeModalContent"></div>
     <div class="payment-modal-steps">
       <div class="pmstep">
-        <strong>Step 1: Open PhonePe App</strong>
-        <p>The payment link has been opened. If it didn't open, tap the button below.</p>
+        <strong>Step 1: PhonePe / UPI app opened</strong>
+        <p>If you see a grey screen with "DISMISS" at the bottom — tap <strong>DISMISS</strong>, then your UPI app will open directly with the amount pre-filled.</p>
       </div>
       <div class="pmstep">
         <strong>Step 2: Complete Payment</strong>
-        <p>Enter your UPI PIN and complete the payment of the seva amount.</p>
+        <p>Enter your UPI PIN in the app and tap Pay to complete the payment.</p>
       </div>
       <div class="pmstep">
-        <strong>Step 3: Note Transaction ID</strong>
-        <p>After payment, go to PhonePe → Transaction History and copy the Transaction ID.</p>
+        <strong>Step 3: Copy Transaction ID</strong>
+        <p>After payment succeeds, go to <strong>PhonePe → History</strong> (or GPay → Transaction) and copy the Transaction ID (starts with T...).</p>
       </div>
     </div>
-    <button type="button" onclick="retryPhonePe()" class="btn-verify" style="margin-top:10px;">📱 Open PhonePe Again</button>
+    <button type="button" onclick="retryPhonePe()" class="btn-verify" style="margin-top:10px;">📱 Open PhonePe / UPI Again</button>
     <button type="button" onclick="paymentDonePhonePe()" class="btn-verify" style="margin-top:8px;background:linear-gradient(135deg,#2e7d32,#43a047);">✅ I've Paid — Enter Transaction ID</button>
   </div>
 </div>
@@ -526,7 +526,7 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7DHcGQRkixmW
 // ========== STATE ==========
 let loginAttempts = 0;
 let lockoutUntil = 0;
-let captchaAnswer = 0;
+let correctCaptchaAnswer = 0;  // renamed to avoid conflict with input id="captchaAnswer"
 let currentPhonePeURI = "";
 let phonePeData = null;
 let currentBookingPIN = "";
@@ -756,12 +756,18 @@ function generateEnhancedPDF(booking) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
+  // Helper: jsPDF cannot render emojis or Rupee symbol (Rs.) - use plain text only
+  const rs = "Rs.";
+
+  // Background
   doc.setFillColor(248, 240, 255);
   doc.rect(0, 0, 210, 297, "F");
 
+  // Header band
   doc.setFillColor(123, 31, 162);
   doc.rect(0, 0, 210, 45, "F");
 
+  // Temple Name
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(20);
   doc.setFont(undefined, "bold");
@@ -772,93 +778,132 @@ function generateEnhancedPDF(booking) {
   doc.text("Seva Booking Receipt & Payment Confirmation", 105, 28, { align: "center" });
 
   doc.setFontSize(9);
-  doc.text(`Booking ID: ${booking.id}  |  Generated: ${booking.timestamp}`, 105, 38, { align: "center" });
+  doc.text("Booking ID: " + booking.id + "  |  Generated: " + booking.timestamp, 105, 38, { align: "center" });
 
+  // Status badge - plain text, no emoji/tick
   doc.setFillColor(76, 175, 80);
-  doc.roundedRect(75, 48, 60, 12, 3, 3, "F");
+  doc.roundedRect(65, 48, 80, 12, 3, 3, "F");
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(11);
+  doc.setFontSize(12);
   doc.setFont(undefined, "bold");
-  doc.text("✓  PAYMENT CONFIRMED", 105, 57, { align: "center" });
+  doc.text("** PAYMENT CONFIRMED **", 105, 57, { align: "center" });
 
   // Devotee Details Box
-  doc.setTextColor(50, 50, 50);
   doc.setFillColor(255, 255, 255);
-  doc.roundedRect(15, 68, 85, 80, 4, 4, "F");
+  doc.roundedRect(15, 68, 85, 85, 4, 4, "F");
   doc.setFontSize(11);
   doc.setFont(undefined, "bold");
   doc.setTextColor(123, 31, 162);
   doc.text("Devotee Details", 57.5, 78, { align: "center" });
 
+  // Divider line under heading
+  doc.setDrawColor(123, 31, 162);
+  doc.setLineWidth(0.5);
+  doc.line(20, 81, 95, 81);
+
   doc.setTextColor(80, 80, 80);
   doc.setFont(undefined, "normal");
   doc.setFontSize(10);
-  let y = 88;
-  [["Name", booking.name],["Mobile", booking.mobile],["Seva", booking.seva],["Date", booking.date],["Time", booking.time + " IST"]].forEach(([k,v]) => {
+  let y = 91;
+  const details = [
+    ["Name", booking.name],
+    ["Mobile", booking.mobile],
+    ["Seva", booking.seva],
+    ["Date", booking.date],
+    ["Time", booking.time + " IST"]
+  ];
+  details.forEach(([k, v]) => {
     doc.setFont(undefined, "bold"); doc.text(k + ":", 20, y);
-    doc.setFont(undefined, "normal"); doc.text(v, 60, y);
-    y += 11;
+    doc.setFont(undefined, "normal"); doc.text(String(v), 55, y);
+    y += 12;
   });
 
   // Payment Details Box
   doc.setFillColor(255, 255, 255);
-  doc.roundedRect(110, 68, 85, 80, 4, 4, "F");
+  doc.roundedRect(110, 68, 85, 85, 4, 4, "F");
   doc.setFontSize(11);
   doc.setFont(undefined, "bold");
   doc.setTextColor(123, 31, 162);
   doc.text("Payment Details", 152.5, 78, { align: "center" });
 
+  doc.setDrawColor(123, 31, 162);
+  doc.setLineWidth(0.5);
+  doc.line(115, 81, 190, 81);
+
   doc.setTextColor(80, 80, 80);
   doc.setFont(undefined, "normal");
   doc.setFontSize(10);
-  y = 88;
-  [["Amount", booking.price],["Method", booking.paymentMethod],["Txn ID", booking.txnId],["Status", "Paid ✓"],["UPI ID", UPI_ID]].forEach(([k,v]) => {
+  y = 91;
+  // Fix: strip Rs symbol from price and re-add as plain text
+  const plainAmount = rs + " " + booking.price.replace(/[^0-9.]/g, "");
+  const payDetails = [
+    ["Amount", plainAmount],
+    ["Method", booking.paymentMethod],
+    ["Txn ID", booking.txnId],
+    ["Status", "PAID"],
+    ["UPI ID", UPI_ID]
+  ];
+  payDetails.forEach(([k, v]) => {
     doc.setFont(undefined, "bold"); doc.text(k + ":", 115, y);
     doc.setFont(undefined, "normal");
-    const shortV = v.length > 18 ? v.substring(0, 18) + "..." : v;
+    const shortV = String(v).length > 18 ? String(v).substring(0, 18) + "..." : String(v);
     doc.text(shortV, 148, y);
-    y += 11;
+    y += 12;
   });
 
-  // Booking PIN (CVV) Box
+  // Booking PIN (CVV) Box - prominent, no emoji
   doc.setFillColor(232, 245, 233);
-  doc.roundedRect(15, 152, 180, 28, 4, 4, "F");
+  doc.roundedRect(15, 158, 180, 38, 4, 4, "F");
+  doc.setDrawColor(76, 175, 80);
+  doc.setLineWidth(1.5);
+  doc.roundedRect(15, 158, 180, 38, 4, 4, "S");
+
   doc.setFontSize(10);
   doc.setFont(undefined, "bold");
   doc.setTextColor(46, 125, 50);
-  doc.text("🔐 Booking Security PIN (CVV):", 105, 162, { align: "center" });
-  doc.setFontSize(18);
+  doc.text("BOOKING SECURITY PIN  (Show at temple counter)", 105, 169, { align: "center" });
+
+  // Big PIN number
+  doc.setFontSize(28);
   doc.setFont(undefined, "bold");
   doc.setTextColor(27, 94, 32);
-  doc.text(booking.bookingPIN, 105, 174, { align: "center" });
+  // Space out digits for readability
+  const pin = String(booking.bookingPIN || "------");
+  const spacedPin = pin.split("").join("  ");
+  doc.text(spacedPin, 105, 186, { align: "center" });
 
-  // Instructions
+  // Instructions Box
   doc.setFillColor(255, 248, 220);
-  doc.roundedRect(15, 185, 180, 55, 4, 4, "F");
+  doc.roundedRect(15, 202, 180, 55, 4, 4, "F");
   doc.setFontSize(10);
   doc.setFont(undefined, "bold");
   doc.setTextColor(180, 100, 0);
-  doc.text("Instructions for Devotees", 105, 196, { align: "center" });
+  doc.text("Instructions for Devotees", 105, 213, { align: "center" });
+
+  doc.setDrawColor(255, 200, 0);
+  doc.setLineWidth(0.4);
+  doc.line(20, 216, 190, 216);
+
   doc.setFont(undefined, "normal");
   doc.setTextColor(100, 70, 0);
   doc.setFontSize(9.5);
-  doc.text("• Please arrive 15 minutes before your booked time slot.", 25, 207);
-  doc.text("• Carry this PDF receipt (print or digital) to the temple.", 25, 216);
-  doc.text("• Show your Booking PIN (CVV) to the temple counter for verification.", 25, 225);
-  doc.text("• This receipt is valid only for the booked date and seva.", 25, 234);
+  doc.text("* Please arrive 15 minutes before your booked time slot.", 22, 224);
+  doc.text("* Carry this PDF receipt (print or digital) to the temple.", 22, 233);
+  doc.text("* Show your Booking PIN above to the temple counter for verification.", 22, 242);
+  doc.text("* This receipt is valid only for the booked date and seva.", 22, 251);
 
-  // Footer
+  // Footer band
   doc.setFillColor(123, 31, 162);
   doc.rect(0, 270, 210, 27, "F");
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(10);
+  doc.setFontSize(11);
   doc.setFont(undefined, "bold");
-  doc.text(`${TEMPLE_NAME}`, 105, 281, { align: "center" });
+  doc.text(TEMPLE_NAME, 105, 281, { align: "center" });
   doc.setFont(undefined, "normal");
   doc.setFontSize(9);
-  doc.text("🙏 May Lord Shiva bless you with health, wealth, and prosperity 🙏", 105, 290, { align: "center" });
+  doc.text("May Lord Shiva bless you with health, wealth, and prosperity", 105, 291, { align: "center" });
 
-  doc.save(`Temple_Receipt_${booking.id}.pdf`);
+  doc.save("Temple_Receipt_" + booking.id + ".pdf");
 }
 
 // ========== WHATSAPP ==========
@@ -953,7 +998,7 @@ function refreshCaptcha() {
   if (captchaOp === "-" && captchaNum2 > captchaNum1) {
     [captchaNum1, captchaNum2] = [captchaNum2, captchaNum1];
   }
-  captchaAnswer = captchaOp === "+" ? captchaNum1 + captchaNum2
+  correctCaptchaAnswer = captchaOp === "+" ? captchaNum1 + captchaNum2
     : captchaOp === "-" ? captchaNum1 - captchaNum2
     : captchaNum1 * captchaNum2;
   document.getElementById("captchaQuestion").textContent = `${captchaNum1} ${captchaOp} ${captchaNum2} = ?`;
@@ -1016,7 +1061,7 @@ function adminLogin() {
   const errorBox = document.getElementById("adminError");
 
   // CAPTCHA check
-  if (isNaN(captchaInput) || captchaInput !== captchaAnswer) {
+  if (isNaN(captchaInput) || captchaInput !== correctCaptchaAnswer) {
     errorBox.textContent = "❌ Wrong CAPTCHA answer. Please try again.";
     errorBox.style.display = "block";
     refreshCaptcha();
